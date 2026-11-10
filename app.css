@@ -1,0 +1,196 @@
+.app-main {
+  padding: 6.5rem 6vw 4rem;
+  min-height: 70vh;
+}
+
+.app-shell {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.app-shell.wide {
+  max-width: 1100px;
+}
+
+.app-card {
+  background: linear-gradient(160deg, #5a3422 0%, #2f1a10 100%);
+  border: 1px solid rgba(240, 196, 58, 0.35);
+  padding: 1.75rem 1.5rem;
+  color: var(--sand-text, #f7efd9);
+}
+
+.app-card h1,
+.app-card h2 {
+  font-family: var(--font-script, "Cormorant Garamond", Georgia, serif);
+  margin: 0 0 0.75rem;
+  color: #fff;
+}
+
+.app-card .eyebrow {
+  color: var(--gold, #f0c43a);
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-grid.two {
+  grid-template-columns: 1fr 1fr;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: rgba(247, 239, 217, 0.85);
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(240, 196, 58, 0.28);
+  background: rgba(7, 17, 31, 0.35);
+  color: #fff;
+  font: inherit;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.alert {
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(240, 196, 58, 0.35);
+  background: rgba(240, 196, 58, 0.12);
+  color: var(--gold-soft, #ffe9a0);
+}
+
+.alert.error {
+  border-color: rgba(233, 30, 140, 0.45);
+  background: rgba(233, 30, 140, 0.12);
+  color: #ffb6d9;
+}
+
+.alert.success {
+  border-color: rgba(62, 207, 90, 0.45);
+  background: rgba(62, 207, 90, 0.12);
+  color: #b8f5c4;
+}
+
+.price-preview {
+  font-family: var(--font-display, "Bebas Neue", sans-serif);
+  font-size: 2rem;
+  color: var(--gold, #f0c43a);
+  letter-spacing: 0.04em;
+}
+
+.qr-box {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.qr-box img {
+  width: min(280px, 100%);
+  background: #fff;
+  padding: 12px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+table.data th,
+table.data td {
+  text-align: left;
+  padding: 0.75rem 0.6rem;
+  border-bottom: 1px solid rgba(240, 196, 58, 0.18);
+  vertical-align: top;
+}
+
+table.data th {
+  color: var(--magenta, #e91e8c);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-nav a {
+  color: var(--gold, #f0c43a);
+  font-size: 0.9rem;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid rgba(240, 196, 58, 0.35);
+  color: var(--gold, #f0c43a);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tier-rows {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tier-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+.light-page .app-card {
+  background: rgba(255, 255, 255, 0.82);
+  color: #1a1208;
+  border-color: rgba(212, 160, 23, 0.35);
+}
+
+.light-page label {
+  color: #3a2a18;
+}
+
+.light-page input,
+.light-page select,
+.light-page textarea {
+  background: #fff;
+  color: #1a1208;
+}
+
+.light-page .app-card h1,
+.light-page .app-card h2 {
+  color: #1a1208;
+}
+
+@media (max-width: 700px) {
+  .form-grid.two,
+  .tier-row {
+    grid-template-columns: 1fr;
+  }
+}

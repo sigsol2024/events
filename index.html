@@ -73,7 +73,7 @@
         <p class="hero-support">Good vibes. Great food. Unforgettable moments on the sand at Love Beach.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#tickets">Get Your Spot</a>
-          <a class="btn btn-ghost" href="tel:08087791773">Call to Reserve</a>
+          <a class="btn btn-ghost" href="tel:08087791773">Call to Enquire</a>
         </div>
       </div>
     </section>
@@ -157,68 +157,8 @@
         <h2 class="section-title dark">Secure your spot early.</h2>
         <p class="section-lede dark">Limited spaces. Choose your entry or lock a VIP table with dome service.</p>
 
-        <div class="ticket-layout">
-          <article class="ticket-panel regular">
-            <button class="float-drink" type="button" aria-label="Shake cocktail">
-              <svg class="drink drink--mini" viewBox="0 0 90 120">
-                <ellipse cx="45" cy="112" rx="18" ry="4" fill="rgba(0,0,0,0.15)"/>
-                <path d="M28 30h34l-5 70H33L28 30Z" fill="#ffb703"/>
-                <path d="M32 36h26l-3.5 52H35.5L32 36Z" fill="#fb8500"/>
-                <rect x="40" y="16" width="10" height="16" rx="2" fill="#fff6d8"/>
-                <path d="M36 18c6-10 18-10 24 2" stroke="#e91e8c" stroke-width="2.5" fill="none"/>
-                <circle cx="60" cy="18" r="5" fill="#e91e8c"/>
-              </svg>
-            </button>
-            <h3>Regular Tickets</h3>
-            <p class="ticket-note">Access to the Beach House night — food, drinks, music, and vibes included.</p>
-            <div class="price-split">
-              <div>
-                <span class="price-label">Guys</span>
-                <span class="price">100K</span>
-              </div>
-              <div>
-                <span class="price-label">Girls</span>
-                <span class="price">70K</span>
-              </div>
-            </div>
-            <a class="btn btn-primary" href="tel:08087791773">Reserve Regular</a>
-          </article>
-
-          <div class="vip-stack">
-            <article class="ticket-panel vip">
-              <button class="float-drink" type="button" aria-label="Shake coconut drink">
-                <svg class="drink drink--mini" viewBox="0 0 100 110">
-                  <ellipse cx="50" cy="100" rx="22" ry="5" fill="rgba(0,0,0,0.14)"/>
-                  <ellipse cx="50" cy="72" rx="28" ry="24" fill="#6b3f24"/>
-                  <ellipse cx="50" cy="68" rx="22" ry="18" fill="#fff8ea"/>
-                  <rect x="48" y="34" width="3" height="28" rx="1.5" fill="#f0c43a"/>
-                  <path d="M42 52c4-12 14-14 20-4" stroke="#e91e8c" stroke-width="2.5" fill="none"/>
-                  <circle cx="62" cy="46" r="5" fill="#e91e8c"/>
-                </svg>
-              </button>
-              <h3>VIP Table of 5 · Dome</h3>
-              <p class="ticket-note">Private table with dome — elevated seating for your crew.</p>
-              <span class="price">1 Million</span>
-              <a class="btn btn-magenta" href="tel:08087791773">Book This Table</a>
-            </article>
-            <article class="ticket-panel vip featured">
-              <button class="float-drink" type="button" aria-label="Shake tropical drink">
-                <svg class="drink drink--mini" viewBox="0 0 90 120">
-                  <ellipse cx="45" cy="112" rx="18" ry="4" fill="rgba(0,0,0,0.15)"/>
-                  <path d="M30 34h30l-4 66H34L30 34Z" fill="#90e0ef"/>
-                  <path d="M34 40h22l-2.5 48H36.5L34 40Z" fill="#00b4d8"/>
-                  <path d="M36 46h18l-1 14H37L36 46Z" fill="rgba(255,255,255,0.35)"/>
-                  <rect x="41" y="18" width="8" height="18" rx="2" fill="#fff6d8"/>
-                  <path d="M28 50c8-3 12 6 8 11" stroke="#2f9e44" stroke-width="2.5" fill="none"/>
-                  <ellipse cx="26" cy="48" rx="6" ry="3" fill="#3ecf5a"/>
-                </svg>
-              </button>
-              <h3>VIP Table of 5 · Bigger Dome</h3>
-              <p class="ticket-note">Bigger dome experience — more presence, more room to host.</p>
-              <span class="price">1.2 Million</span>
-              <a class="btn btn-magenta" href="tel:08087791773">Book Bigger Dome</a>
-            </article>
-          </div>
+        <div class="ticket-layout" id="ticket-layout" data-tickets-root>
+          <p class="ticket-note" style="grid-column:1/-1;">Loading tickets…</p>
         </div>
       </div>
     </section>

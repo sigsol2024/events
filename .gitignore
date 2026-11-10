@@ -1,7 +1,11 @@
-# Local image tooling — not needed for the static site
+# Local image tooling
 node_modules/
 package.json
 package-lock.json
+
+# Secrets / local-only bootstrap
+config/config.php
+setup-admin.php
 
 # OS / editor junk
 .DS_Store
