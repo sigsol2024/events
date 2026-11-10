@@ -138,9 +138,9 @@ button {
   min-height: 100dvh;
   height: 100svh;
   display: grid;
-  align-content: center;
-  align-items: center;
-  padding: 5.5rem 6vw 4rem;
+  align-content: start;
+  align-items: start;
+  padding: 8.75rem 6vw 3.5rem;
   isolation: isolate;
   color: var(--sand-text);
   overflow: hidden;
@@ -197,14 +197,14 @@ button {
   font-family: var(--font-script);
   font-style: italic;
   font-weight: 500;
-  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-size: clamp(2.1rem, 5vw, 3.2rem);
   line-height: 0.9;
   color: #fff;
 }
 
 .brand-title {
   font-family: var(--font-display);
-  font-size: clamp(3.6rem, 12vw, 7.2rem);
+  font-size: clamp(3.2rem, 10vw, 5.6rem);
   line-height: 0.86;
   letter-spacing: 0.04em;
   color: var(--gold);
@@ -215,7 +215,7 @@ button {
   font-family: var(--font-script);
   font-style: italic;
   font-weight: 600;
-  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
   color: #ff6eb5;
   margin-top: 0.15rem;
 }
@@ -245,7 +245,7 @@ button {
 
 .float-prop--hero-right {
   right: 7vw;
-  top: 24%;
+  top: 28%;
   width: clamp(88px, 12vw, 140px);
   animation-delay: 1.1s;
 }
@@ -811,9 +811,10 @@ button {
     height: 100vh;
     height: 100dvh;
     min-height: 100svh;
-    padding-top: 5.5rem;
+    padding-top: 7.25rem;
     padding-bottom: 2rem;
-    align-items: end;
+    align-content: start;
+    align-items: start;
   }
 
   .hero-actions,
