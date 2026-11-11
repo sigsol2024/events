@@ -56,8 +56,9 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   `full_name` VARCHAR(160) NOT NULL,
   `email` VARCHAR(190) NOT NULL,
   `phone` VARCHAR(40) NOT NULL,
-  `date_of_birth` DATE NOT NULL,
+  `date_of_birth` DATE NULL,
   `gender` ENUM('male','female') NOT NULL,
+  `age_confirmed` TINYINT(1) NOT NULL DEFAULT 0,
   `amount` DECIMAL(12,2) NOT NULL,
   `currency` CHAR(3) NOT NULL DEFAULT 'NGN',
   `status` ENUM('pending','processing','paid','failed','expired','refunded') NOT NULL DEFAULT 'pending',
@@ -68,6 +69,7 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   `ticket_code` VARCHAR(64) NULL,
   `access_token` VARCHAR(64) NULL,
   `paid_at` DATETIME NULL,
+  `admitted_at` DATETIME NULL,
   `admin_notified_at` DATETIME NULL,
   `buyer_notified_at` DATETIME NULL,
   `incomplete_notified_at` DATETIME NULL,
@@ -81,6 +83,7 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   UNIQUE KEY `bookings_checkout_unique` (`bachs_checkout_id`),
   KEY `bookings_status` (`status`),
   KEY `bookings_ticket_id` (`ticket_id`),
+  KEY `bookings_admitted_at` (`admitted_at`),
   KEY `bookings_open_lookup` (`email`, `ticket_id`, `status`),
   CONSTRAINT `bookings_ticket_fk`
     FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`)

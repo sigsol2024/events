@@ -27,7 +27,7 @@ $thankYou = app_url(
           <p style="margin:24px 0 0;">
             <a href="<?= e($thankYou) ?>" style="display:inline-block;background:#e91e8c;color:#fff;text-decoration:none;padding:12px 18px;font-weight:bold;">View &amp; download QR ticket</a>
           </p>
-          <p style="margin:16px 0 0;font-size:12px;color:rgba(247,239,217,0.65);">Show your QR at the gate. Staff will unlock ticket details with their verification PIN.</p>
+          <p style="margin:16px 0 0;font-size:12px;color:rgba(247,239,217,0.65);">Show your QR at the gate. Staff unlock details with their PIN and admit you into the event.</p>
         </td></tr>
       </table>
     </td></tr>

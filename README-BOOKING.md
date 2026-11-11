@@ -27,8 +27,13 @@ Subscribe at least to:
 
 Do **not** treat `collection.failed` as a terminal booking failure — Bachs keeps the checkout open for retry.
 
-If this database was imported before the Bachs hardening pass, also run `sql/patches/001_bachs_hardening.sql`.
-For incomplete-booking resume/emails, also run `sql/patches/002_incomplete_booking_resume.sql`.
+### Database auto-updates
+Pending migrations in `database/auto-migrations/` apply automatically on app bootstrap (booking, gate, admin — locked + idempotent).
+Signed-in admin pages also show a green banner when updates ran in that request. Manual SQL under `sql/patches/` is optional fallback only.
+
+Gate flow: scan QR → enter staff PIN → review guest → tap **Admit guest** (saved once). Re-scans still work and show **Already admitted**; the QR does not expire.
+
+Booking age check: guests confirm **I am 18 or older** (checkbox). Date of birth is no longer collected.
 
 ## 5. Incomplete bookings
 - Starting checkout emails the buyer a **Complete payment** link.

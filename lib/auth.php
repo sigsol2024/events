@@ -19,6 +19,18 @@ function require_admin(): array
     if (!$admin) {
         redirect(app_url('admin/login.php'));
     }
+
+    // Reuses this-request migration result (bootstrap already ran it) for admin banners.
+    $migrate = run_admin_database_auto_migrations((int) $admin['id']);
+    if (is_array($migrate) && !empty($migrate['applied'])) {
+        $names = array_map(static fn(array $row): string => (string) $row['description'], $migrate['applied']);
+        flash('db', 'Database updated: ' . implode('; ', $names));
+    }
+    if (is_array($migrate) && !empty($migrate['failed'])) {
+        $names = array_map(static fn(array $row): string => (string) ($row['id'] ?? 'migration'), $migrate['failed']);
+        flash('db_error', 'Database update failed: ' . implode('; ', $names) . '. Check server logs.');
+    }
+
     return $admin;
 }
 

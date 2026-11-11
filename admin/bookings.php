@@ -38,7 +38,7 @@ ob_start();
       <table class="admin-table">
         <thead>
           <tr>
-            <th>Ref</th><th>Guest</th><th>Ticket</th><th>Amount</th><th>Status</th><th>Paid</th><th></th>
+            <th>Ref</th><th>Guest</th><th>Ticket</th><th>Amount</th><th>Status</th><th>Gate</th><th>Paid</th><th></th>
           </tr>
         </thead>
         <tbody>
@@ -55,6 +55,16 @@ ob_start();
             </td>
             <td data-label="Amount">₦<?= e(number_format((float) $b['amount'], 2)) ?></td>
             <td data-label="Status"><span class="<?= e(admin_status_class((string) $b['status'])) ?>"><?= e($b['status']) ?></span></td>
+            <td data-label="Gate">
+              <?php if (($b['status'] ?? '') === 'paid' && !empty($b['admitted_at'])): ?>
+                <span class="admin-status admin-status-refunded">Admitted</span>
+                <div class="admin-muted"><?= e((string) $b['admitted_at']) ?></div>
+              <?php elseif (($b['status'] ?? '') === 'paid'): ?>
+                <span class="admin-status admin-status-pending">Not admitted</span>
+              <?php else: ?>
+                —
+              <?php endif; ?>
+            </td>
             <td data-label="Paid"><?= e((string) ($b['paid_at'] ?: '—')) ?></td>
             <td data-label=""><a class="admin-btn admin-btn-secondary admin-btn-sm" href="<?= e(app_url('admin/booking.php?id=' . (int) $b['id'])) ?>">View</a></td>
           </tr>

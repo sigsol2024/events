@@ -9,7 +9,7 @@ $ticketCardsHtml = render_landing_ticket_cards();
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tee's Beach House Edition — Temi Presents</title>
-  <meta name="description" content="Tee's Beach House Edition at Love Beach, Eleko Lagos. 11 December 2026, 8PM till dawn. Good vibes, great food, unforgettable moments." />
+  <meta name="description" content="Tee's Beach House Edition — exclusive beachfront experience at Love Beach, Eleko Lagos. 11 December 2026, 8PM till dawn. Music, food, drinks, games and vibes." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -22,6 +22,7 @@ $ticketCardsHtml = render_landing_ticket_cards();
       <a href="#details">Details</a>
       <a href="#includes">Includes</a>
       <a href="#tickets">Tickets</a>
+      <a href="#policies">Policies</a>
       <a class="nav-cta" href="tel:08087791773">Reserve</a>
     </nav>
   </header>
@@ -75,7 +76,7 @@ $ticketCardsHtml = render_landing_ticket_cards();
           <span class="brand-title">Beach House</span>
           <span class="brand-edition">Edition</span>
         </h1>
-        <p class="hero-support">Good vibes. Great food. Unforgettable moments on the sand at Love Beach.</p>
+        <p class="hero-support">An exclusive beachfront night — music, food, drinks, games and beautiful people.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#tickets">Get Your Spot</a>
           <a class="btn btn-ghost" href="tel:08087791773">Call to Enquire</a>
@@ -89,7 +90,7 @@ $ticketCardsHtml = render_landing_ticket_cards();
       <div class="section-inner">
         <p class="eyebrow">The Night</p>
         <h2 class="section-title">Come for the beach.<br />Stay for the vibes.</h2>
-        <p class="section-lede">One night under palms and tide at Love Beach — curated for people who know how to show up.</p>
+        <p class="section-lede">Tee's Beach House Edition is an exclusive beachfront experience bringing together good music, great food, refreshing drinks, exciting games and beautiful people. Come ready to relax, connect, dance and create unforgettable memories.</p>
 
         <ul class="fact-row">
           <li class="fact">
@@ -160,11 +161,43 @@ $ticketCardsHtml = render_landing_ticket_cards();
       <div class="section-inner">
         <p class="eyebrow dark">Tickets &amp; Tables</p>
         <h2 class="section-title dark">Secure your spot early.</h2>
-        <p class="section-lede dark">Limited spaces. Choose your entry or lock a VIP table with dome service.</p>
+        <p class="section-lede dark">Regular tickets and exclusive table packages. Bookings are subject to availability — reserve early.</p>
 
         <div class="ticket-layout" id="ticket-layout" data-tickets-root data-tickets-ready="1">
           <?= $ticketCardsHtml ?>
         </div>
+
+        <aside class="ticket-notice" role="note">
+          <p class="ticket-notice-label">Important ticket notice</p>
+          <p>Regular ticket categories are gender-specific, and all tickets will be verified at the event venue upon arrival. Guests are expected to book the ticket that corresponds with their gender. Any discrepancies will be subject to verification and the applicable ticket price difference must be paid before entry.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section policies light" id="policies">
+      <div class="section-inner">
+        <p class="eyebrow">Booking policies</p>
+        <h2 class="section-title">Read before you reserve.</h2>
+        <p class="section-lede">Clear rules so your booking and entry stay smooth.</p>
+
+        <ul class="policy-list">
+          <li>
+            <strong>Payment confirms your ticket</strong>
+            <span>Tickets are confirmed only after successful payment through our secure gateway. We never collect your card details on this site.</span>
+          </li>
+          <li>
+            <strong>No cancellation</strong>
+            <span>All sales are final. There is no cancellation policy once payment is completed.</span>
+          </li>
+          <li>
+            <strong>Non-transferable</strong>
+            <span>Tickets can’t be transferred. If you need help, call or text the reservations line directly.</span>
+          </li>
+          <li>
+            <strong>Subject to availability</strong>
+            <span>Bookings are subject to availability, including limited exclusive table packages.</span>
+          </li>
+        </ul>
       </div>
     </section>
 

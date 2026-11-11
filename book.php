@@ -9,8 +9,6 @@ $ticket = $ticketId ? ticket_find($ticketId, true) : null;
 $error = null;
 $cancelled = isset($_GET['cancelled']);
 $minAge = (int) config('min_age', 18);
-$maxDob = (new DateTimeImmutable('today'))->modify('-' . $minAge . ' years')->format('Y-m-d');
-$minDob = (new DateTimeImmutable('today'))->modify('-100 years')->format('Y-m-d');
 
 if (!$ticket) {
     $error = 'That ticket is unavailable. Please choose another from the event page.';
@@ -24,11 +22,11 @@ if ($ticket && request_method() === 'POST') {
             $fullName = post_string('full_name');
             $email = post_string('email');
             $phone = post_string('phone');
-            $dob = post_string('date_of_birth');
             $gender = strtolower(post_string('gender'));
+            $ageConfirmed = isset($_POST['age_confirmed']);
             $priceId = (int) ($_POST['price_id'] ?? 0) ?: null;
 
-            if ($fullName === '' || $email === '' || $phone === '' || $dob === '') {
+            if ($fullName === '' || $email === '' || $phone === '') {
                 throw new InvalidArgumentException('Please complete all required fields.');
             }
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -37,11 +35,8 @@ if ($ticket && request_method() === 'POST') {
             if (!in_array($gender, ['male', 'female'], true)) {
                 throw new InvalidArgumentException('Select your gender.');
             }
-            if ($dob > $maxDob) {
-                throw new InvalidArgumentException('You must be ' . $minAge . ' or older to book.');
-            }
-            if (!is_adult($dob, $minAge)) {
-                throw new InvalidArgumentException('You must be ' . $minAge . ' or older to book.');
+            if (!$ageConfirmed) {
+                throw new InvalidArgumentException('Confirm that you are ' . $minAge . ' or older to continue.');
             }
 
             $phoneNormalized = normalize_phone_e164($phone);
@@ -56,8 +51,9 @@ if ($ticket && request_method() === 'POST') {
                 'full_name' => $fullName,
                 'email' => $email,
                 'phone' => $phoneNormalized,
-                'date_of_birth' => $dob,
+                'date_of_birth' => null,
                 'gender' => $gender,
+                'age_confirmed' => 1,
                 'price_id' => $resolved['price_id'],
                 'price_label' => $resolved['price_label'],
                 'amount' => $resolved['amount'],
@@ -108,8 +104,9 @@ if ($ticket && request_method() === 'POST') {
                 'full_name' => $fullName,
                 'email' => $email,
                 'phone' => $phoneNormalized,
-                'date_of_birth' => $dob,
+                'date_of_birth' => null,
                 'gender' => $gender,
+                'age_confirmed' => 1,
                 'amount' => $resolved['amount'],
                 'currency' => (string) config('currency', 'NGN'),
             ]);
@@ -141,6 +138,9 @@ ob_start();
     <h1><?= $ticket ? e($ticket['title']) : 'Ticket unavailable' ?></h1>
     <?php if ($ticket): ?>
       <p><?= e((string) $ticket['description']) ?></p>
+      <div class="alert" style="margin-top:1rem;">
+        Tickets are confirmed only after successful payment. Regular tickets are gender-specific and verified at the gate — book the option that matches your gender. No cancellations; tickets are non-transferable.
+      </div>
     <?php endif; ?>
 
     <?php if ($cancelled): ?>
@@ -205,23 +205,6 @@ ob_start();
             <label>Phone
               <input type="tel" name="phone" id="phone" required autocomplete="tel" inputmode="tel" placeholder="08012345678" value="<?= e(post_string('phone')) ?>" />
             </label>
-            <label>Date of birth
-              <input
-                type="date"
-                name="date_of_birth"
-                id="date_of_birth"
-                required
-                min="<?= e($minDob) ?>"
-                max="<?= e($maxDob) ?>"
-                value="<?= e(post_string('date_of_birth')) ?>"
-                class="dob-picker"
-                inputmode="none"
-              />
-              <span class="field-hint">Must be <?= (int) $minAge ?>+. Tap to open the calendar.</span>
-            </label>
-          </div>
-
-          <div class="form-grid two">
             <label>Gender
               <select name="gender" id="gender" required>
                 <option value="">Select</option>
@@ -229,7 +212,9 @@ ob_start();
                 <option value="female" <?= post_string('gender') === 'female' ? 'selected' : '' ?>>Female</option>
               </select>
             </label>
+          </div>
 
+          <div class="form-grid two">
             <?php if ($isTiered): ?>
               <label>Ticket option
                 <select name="price_id" id="price_id" required>
@@ -254,6 +239,11 @@ ob_start();
               </div>
             <?php endif; ?>
           </div>
+
+          <label class="age-confirm">
+            <input type="checkbox" name="age_confirmed" id="age_confirmed" value="1" required <?= isset($_POST['age_confirmed']) ? 'checked' : '' ?> />
+            <span>I am <?= (int) $minAge ?> or older</span>
+          </label>
 
           <div class="form-actions">
             <button class="btn btn-primary" type="button" id="review-booking-btn">Next: Review</button>
@@ -286,8 +276,8 @@ ob_start();
                     <strong id="preview-gender">—</strong>
                   </div>
                   <div>
-                    <span>Date of birth</span>
-                    <strong id="preview-dob">—</strong>
+                    <span>Age</span>
+                    <strong id="preview-age">—</strong>
                   </div>
                 </div>
               </article>
@@ -350,7 +340,7 @@ ob_start();
   var form = document.getElementById('booking-form');
   var gender = document.getElementById('gender');
   var priceSelect = document.getElementById('price_id');
-  var dob = document.getElementById('date_of_birth');
+  var ageConfirmed = document.getElementById('age_confirmed');
   var reviewBtn = document.getElementById('review-booking-btn');
   var editBtn = document.getElementById('preview-edit-btn');
   var step1 = document.querySelector('[data-booking-step="1"]');
@@ -362,7 +352,6 @@ ob_start();
   var isTiered = <?= $isTiered ? 'true' : 'false' ?>;
   var singleAmount = <?= json_encode($singleAmount, JSON_UNESCAPED_UNICODE) ?>;
   var minAge = <?= (int) $minAge ?>;
-  var maxDob = <?= json_encode($maxDob) ?>;
 
   function syncTierFromGender() {
     if (!priceSelect || !gender) return;
@@ -382,30 +371,6 @@ ob_start();
     if (gender.value) syncTierFromGender();
   }
 
-  function openDobPicker() {
-    if (!dob) return;
-    try {
-      if (typeof dob.showPicker === 'function') dob.showPicker();
-    } catch (e) {}
-  }
-
-  if (dob) {
-    dob.addEventListener('keydown', function (e) {
-      if (e.key === 'Tab' || e.key === 'Escape') return;
-      e.preventDefault();
-    });
-    dob.addEventListener('click', openDobPicker);
-    dob.addEventListener('focus', openDobPicker);
-    dob.addEventListener('change', function () {
-      if (dob.value && dob.value > maxDob) {
-        dob.setCustomValidity('You must be ' + minAge + ' or older.');
-        dob.value = maxDob;
-      } else {
-        dob.setCustomValidity('');
-      }
-    });
-  }
-
   function selectedTier() {
     if (!isTiered || !priceSelect || !priceSelect.selectedOptions.length) return 'Single ticket';
     var opt = priceSelect.selectedOptions[0];
@@ -421,21 +386,14 @@ ob_start();
     return singleAmount || '—';
   }
 
-  function formatDob(value) {
-    if (!value) return '—';
-    var parts = value.split('-');
-    if (parts.length !== 3) return value;
-    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    var m = Number(parts[1]) - 1;
-    return parts[2] + ' ' + (months[m] || parts[1]) + ' ' + parts[0];
-  }
-
   function fillPreview() {
     var name = document.getElementById('full_name').value.trim() || 'Guest';
     document.getElementById('preview-name').textContent = name;
     document.getElementById('preview-email').textContent = document.getElementById('email').value.trim() || '—';
     document.getElementById('preview-phone').textContent = document.getElementById('phone').value.trim() || '—';
-    document.getElementById('preview-dob').textContent = formatDob(dob.value);
+    document.getElementById('preview-age').textContent = ageConfirmed && ageConfirmed.checked
+      ? (minAge + '+ confirmed')
+      : 'Not confirmed';
     document.getElementById('preview-gender').textContent = gender.value ? gender.options[gender.selectedIndex].text : '—';
     document.getElementById('preview-ticket-title').textContent = ticketTitle;
     document.getElementById('preview-tier').textContent = selectedTier();
@@ -449,7 +407,6 @@ ob_start();
       el.classList.toggle('is-active', n === step);
       el.classList.toggle('is-done', n < step);
     });
-    // Line fills between centers of steps 1→2→3
     if (progress) {
       var pct = step <= 1 ? 0 : (step === 2 ? 50 : 100);
       progress.style.width = pct + '%';
@@ -472,11 +429,6 @@ ob_start();
     reviewBtn.addEventListener('click', function () {
       syncTierFromGender();
       if (!form.reportValidity()) return;
-      if (dob.value && dob.value > maxDob) {
-        dob.setCustomValidity('You must be ' + minAge + ' or older.');
-        dob.reportValidity();
-        return;
-      }
       fillPreview();
       goToStep(2);
     });

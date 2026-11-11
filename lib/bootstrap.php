@@ -18,6 +18,7 @@ $CONFIG = require $configPath;
 
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/database-auto-migrate.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/tickets.php';
 require_once __DIR__ . '/bookings.php';
@@ -27,3 +28,7 @@ require_once __DIR__ . '/mailer.php';
 require_once __DIR__ . '/settings.php';
 
 date_default_timezone_set('Africa/Lagos');
+
+// Keep schema current for public booking/gate pages too (not only admin).
+// Idempotent + locked; admin flash still reads the same request result.
+run_admin_database_auto_migrations();

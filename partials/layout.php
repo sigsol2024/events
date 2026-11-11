@@ -19,10 +19,10 @@
 <body class="<?= e($bodyClass) ?>">
 <?php if ($showNav): ?>
   <header class="site-nav is-scrolled">
-    <a class="nav-brand" href="<?= e(app_url('index.html')) ?>">Tee's Beach House</a>
+    <a class="nav-brand" href="<?= e(app_url('index.php')) ?>">Tee's Beach House</a>
     <nav class="nav-links" aria-label="Primary">
-      <a href="<?= e(app_url('index.html#tickets')) ?>">Tickets</a>
-      <a class="nav-cta" href="<?= e(app_url('index.html#tickets')) ?>">Book</a>
+      <a href="<?= e(app_url('index.php#tickets')) ?>">Tickets</a>
+      <a class="nav-cta" href="<?= e(app_url('index.php#tickets')) ?>">Book</a>
     </nav>
   </header>
 <?php endif; ?>

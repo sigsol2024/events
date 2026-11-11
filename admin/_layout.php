@@ -82,12 +82,18 @@ $nav = [
           <h1><?= e($title) ?></h1>
         </div>
         <div class="admin-topbar-actions">
-          <a class="admin-btn admin-btn-secondary admin-btn-sm" href="<?= e(app_url('index.html')) ?>" target="_blank" rel="noopener">View site</a>
+          <a class="admin-btn admin-btn-secondary admin-btn-sm" href="<?= e(app_url('index.php')) ?>" target="_blank" rel="noopener">View site</a>
         </div>
       </header>
 
       <main class="admin-content">
         <div class="admin-content-inner">
+          <?php if ($dbFlash = flash('db')): ?>
+            <div class="admin-alert admin-alert-success" role="status"><?= e($dbFlash) ?></div>
+          <?php endif; ?>
+          <?php if ($dbError = flash('db_error')): ?>
+            <div class="admin-alert admin-alert-error" role="alert"><?= e($dbError) ?></div>
+          <?php endif; ?>
           <?= $content ?>
         </div>
       </main>

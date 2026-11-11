@@ -37,13 +37,14 @@ ob_start();
     <div class="admin-detail-row"><dt>Guest</dt><dd><?= e($booking['full_name']) ?></dd></div>
     <div class="admin-detail-row"><dt>Email</dt><dd><?= e($booking['email']) ?></dd></div>
     <div class="admin-detail-row"><dt>Phone</dt><dd><?= e($booking['phone']) ?></dd></div>
-    <div class="admin-detail-row"><dt>Date of birth</dt><dd><?= e($booking['date_of_birth']) ?></dd></div>
+    <div class="admin-detail-row"><dt>Age</dt><dd><?= e(booking_age_label($booking)) ?><?= !empty($booking['date_of_birth'] ?? null) ? ' · DOB ' . e((string) $booking['date_of_birth']) : '' ?></dd></div>
     <div class="admin-detail-row"><dt>Gender</dt><dd><?= e(ucfirst((string) $booking['gender'])) ?></dd></div>
     <div class="admin-detail-row"><dt>Ticket</dt><dd><?= e($booking['ticket_title']) ?><?= $booking['price_label'] ? ' · ' . e($booking['price_label']) : '' ?></dd></div>
     <div class="admin-detail-row"><dt>Amount</dt><dd>₦<?= e(number_format((float) $booking['amount'], 2)) ?> <?= e($booking['currency']) ?></dd></div>
     <div class="admin-detail-row"><dt>Bachs checkout</dt><dd><?= e((string) ($booking['bachs_checkout_id'] ?: '—')) ?></dd></div>
     <div class="admin-detail-row"><dt>Ticket code</dt><dd><?= e((string) ($booking['ticket_code'] ?: '—')) ?></dd></div>
     <div class="admin-detail-row"><dt>Paid at</dt><dd><?= e((string) ($booking['paid_at'] ?: '—')) ?></dd></div>
+    <div class="admin-detail-row"><dt>Admitted at</dt><dd><?= e((string) ($booking['admitted_at'] ?: 'Not admitted')) ?></dd></div>
     <div class="admin-detail-row"><dt>Created</dt><dd><?= e((string) $booking['created_at']) ?></dd></div>
     <div class="admin-detail-row"><dt>Admin emailed</dt><dd><?= e((string) ($booking['admin_notified_at'] ?: '—')) ?></dd></div>
     <div class="admin-detail-row"><dt>Buyer emailed</dt><dd><?= e((string) ($booking['buyer_notified_at'] ?: '—')) ?></dd></div>

@@ -14,7 +14,7 @@ if (!$booking || $token === '' || !hash_equals((string) $booking['access_token']
     <section class="app-shell"><div class="app-card">
       <h1>Booking not found</h1>
       <p>We could not find that booking. Check your email link or contact support.</p>
-      <a class="btn btn-primary" href="<?= e(app_url('index.html')) ?>">Back home</a>
+      <a class="btn btn-primary" href="<?= e(app_url('index.php')) ?>">Back home</a>
     </div></section>
     <?php
     render_layout('Booking not found', ob_get_clean());
@@ -60,7 +60,7 @@ ob_start();
       </div>
       <div class="form-actions" style="justify-content:center;">
         <a class="btn btn-primary" href="<?= e(qr_download_endpoint($booking)) ?>">Download QR</a>
-        <a class="btn btn-ghost" href="<?= e(app_url('index.html')) ?>">Back home</a>
+        <a class="btn btn-ghost" href="<?= e(app_url('index.php')) ?>">Back home</a>
       </div>
       <p style="margin-top:1rem;color:rgba(247,239,217,0.7);font-size:0.9rem;">
         A confirmation email was sent to <?= e($booking['email']) ?> with a link back to this page.
@@ -75,7 +75,7 @@ ob_start();
       <p>Reference: <?= e($booking['reference']) ?></p>
       <div class="form-actions">
         <a class="btn btn-primary" href="<?= e(app_url('thank-you.php?ref=' . urlencode($ref) . '&token=' . urlencode($token))) ?>">Refresh status</a>
-        <a class="btn btn-ghost" href="<?= e(app_url('index.html')) ?>">Home</a>
+        <a class="btn btn-ghost" href="<?= e(app_url('index.php')) ?>">Home</a>
       </div>
       <script>
         setTimeout(function () { window.location.reload(); }, 8000);
