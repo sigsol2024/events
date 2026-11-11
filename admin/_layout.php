@@ -20,7 +20,7 @@ $nav = [
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="<?= e(app_url('admin/admin.css')) ?>?v=2" />
+  <link rel="stylesheet" href="<?= e(app_url('admin/admin.css')) ?>?v=3" />
 </head>
 <body class="admin-body">
   <div class="admin-shell" data-admin-shell>
@@ -69,7 +69,6 @@ $nav = [
           <strong><?= e((string) ($admin['email'] ?? 'Admin')) ?></strong>
           <span>Signed in</span>
         </div>
-        <a class="admin-side-link" href="<?= e(app_url('index.html')) ?>" target="_blank" rel="noopener">View event site</a>
         <a class="admin-side-link is-logout" href="<?= e(app_url('admin/logout.php')) ?>">Log out</a>
       </div>
     </aside>
@@ -83,15 +82,17 @@ $nav = [
           <h1><?= e($title) ?></h1>
         </div>
         <div class="admin-topbar-actions">
-          <a class="admin-btn admin-btn-secondary admin-btn-sm" href="<?= e(app_url('admin/bookings.php?status=paid')) ?>">Paid</a>
+          <a class="admin-btn admin-btn-secondary admin-btn-sm" href="<?= e(app_url('index.html')) ?>" target="_blank" rel="noopener">View site</a>
         </div>
       </header>
 
       <main class="admin-content">
-        <?= $content ?>
+        <div class="admin-content-inner">
+          <?= $content ?>
+        </div>
       </main>
     </div>
   </div>
-  <script src="<?= e(app_url('admin/admin.js')) ?>?v=2"></script>
+  <script src="<?= e(app_url('admin/admin.js')) ?>?v=3"></script>
 </body>
 </html>

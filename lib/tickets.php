@@ -17,6 +17,70 @@ function tickets_all(bool $activeOnly = false): array
     return $tickets;
 }
 
+function ticket_card_drink_svg(): string
+{
+    return <<<'SVG'
+<button class="float-drink" type="button" aria-label="Shake cocktail">
+  <svg class="drink drink--mini" viewBox="0 0 90 120">
+    <ellipse cx="45" cy="112" rx="18" ry="4" fill="rgba(0,0,0,0.15)"/>
+    <path d="M28 30h34l-5 70H33L28 30Z" fill="#ffb703"/>
+    <path d="M32 36h26l-3.5 52H35.5L32 36Z" fill="#fb8500"/>
+    <rect x="40" y="16" width="10" height="16" rx="2" fill="#fff6d8"/>
+    <path d="M36 18c6-10 18-10 24 2" stroke="#e91e8c" stroke-width="2.5" fill="none"/>
+    <circle cx="60" cy="18" r="5" fill="#e91e8c"/>
+  </svg>
+</button>
+SVG;
+}
+
+/**
+ * Server-render public ticket cards for the landing page.
+ */
+function render_landing_ticket_cards(): string
+{
+    try {
+        $tickets = tickets_all(true);
+    } catch (Throwable $e) {
+        return '<p class="ticket-note" style="grid-column:1/-1;">Tickets are temporarily unavailable. Please refresh shortly.</p>';
+    }
+
+    if (!$tickets) {
+        return '<p class="ticket-note" style="grid-column:1/-1;">Tickets will appear here once published.</p>';
+    }
+
+    $html = '';
+    foreach ($tickets as $index => $ticket) {
+        $featured = $index > 0 ? ' vip' : ' regular';
+        $featuredExtra = $index === 2 ? ' featured' : '';
+        $btnClass = $index === 0 ? 'btn btn-primary' : 'btn btn-magenta';
+        $btnLabel = $index === 0 ? 'Reserve' : 'Book Now';
+        $bookUrl = app_url('book.php?ticket_id=' . (int) $ticket['id']);
+
+        $prices = $ticket['prices'] ?? [];
+        if (($ticket['pricing_mode'] ?? '') === 'tiered' && count($prices) > 1) {
+            $pricesHtml = '<div class="price-split">';
+            foreach ($prices as $p) {
+                $pricesHtml .= '<div><span class="price-label">' . e((string) ($p['label'] ?: 'Option')) . '</span>'
+                    . '<span class="price">' . e(format_ngn($p['amount'])) . '</span></div>';
+            }
+            $pricesHtml .= '</div>';
+        } else {
+            $display = isset($prices[0]) ? format_ngn($prices[0]['amount']) : '';
+            $pricesHtml = '<span class="price">' . e($display) . '</span>';
+        }
+
+        $html .= '<article class="ticket-panel' . $featured . $featuredExtra . '">'
+            . ticket_card_drink_svg()
+            . '<h3>' . e((string) $ticket['title']) . '</h3>'
+            . '<p class="ticket-note">' . e((string) ($ticket['description'] ?? '')) . '</p>'
+            . $pricesHtml
+            . '<a class="' . $btnClass . '" href="' . e($bookUrl) . '">' . e($btnLabel) . '</a>'
+            . '</article>';
+    }
+
+    return $html;
+}
+
 function ticket_find(int $id, bool $activeOnly = false): ?array
 {
     $sql = 'SELECT * FROM tickets WHERE id = ?';

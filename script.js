@@ -68,10 +68,10 @@ const drinkSvg = `
 
 const escapeHtml = (value) =>
   String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 
 const renderTicketCard = (ticket, index) => {
   const featured = index > 0 ? " vip" : " regular";
@@ -106,9 +106,21 @@ const renderTicketCard = (ticket, index) => {
 const loadTickets = async () => {
   const root = document.querySelector("[data-tickets-root]");
   if (!root) return;
+  // Already server-rendered by index.php — don't wipe with a hung fetch.
+  if (root.getAttribute("data-tickets-ready") === "1" && root.querySelector(".ticket-panel")) {
+    return;
+  }
+
+  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timer = controller ? setTimeout(() => controller.abort(), 8000) : null;
 
   try {
-    const res = await fetch("api/tickets.php", { headers: { Accept: "application/json" } });
+    const endpoint = new URL("api/tickets.php", window.location.href).toString();
+    const res = await fetch(endpoint, {
+      headers: { Accept: "application/json" },
+      signal: controller ? controller.signal : undefined,
+      cache: "no-store",
+    });
     if (!res.ok) throw new Error("Failed to load tickets");
     const data = await res.json();
     const tickets = Array.isArray(data.tickets) ? data.tickets : [];
@@ -117,10 +129,15 @@ const loadTickets = async () => {
       return;
     }
     root.innerHTML = tickets.map(renderTicketCard).join("");
+    root.setAttribute("data-tickets-ready", "1");
     observeReveals(root);
     bindShakes(root);
   } catch (err) {
-    root.innerHTML = `<p class="ticket-note" style="grid-column:1/-1;">Unable to load live ticket prices. Please refresh or try again shortly.</p>`;
+    if (!root.querySelector(".ticket-panel")) {
+      root.innerHTML = `<p class="ticket-note" style="grid-column:1/-1;">Unable to load live ticket prices. Please refresh or try again shortly.</p>`;
+    }
+  } finally {
+    if (timer) clearTimeout(timer);
   }
 };
 

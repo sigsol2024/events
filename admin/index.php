@@ -19,7 +19,6 @@ foreach (db()->query('SELECT status, COUNT(*) AS c FROM bookings GROUP BY status
 
 $revenue = (float) (db()->query("SELECT COALESCE(SUM(amount),0) AS s FROM bookings WHERE status = 'paid'")->fetch()['s'] ?? 0);
 $ticketCount = (int) db()->query('SELECT COUNT(*) AS c FROM tickets WHERE is_active = 1')->fetch()['c'];
-$hasPin = gate_pin_hash() !== null;
 $recent = bookings_list(null, 8);
 $awaiting = (int) ($counts['pending'] ?? 0) + (int) ($counts['processing'] ?? 0);
 
@@ -32,7 +31,6 @@ ob_start();
   </div>
   <div class="admin-actions">
     <a class="admin-btn admin-btn-primary admin-btn-sm" href="<?= e(app_url('admin/tickets.php')) ?>">Tickets</a>
-    <a class="admin-btn admin-btn-secondary admin-btn-sm" href="<?= e(app_url('admin/gate-pin.php')) ?>">Gate PIN</a>
   </div>
 </div>
 
@@ -52,10 +50,10 @@ ob_start();
     <div class="admin-stat-value"><?= $awaiting ?></div>
     <div class="admin-stat-hint">Pending</div>
   </div>
-  <div class="admin-stat <?= $hasPin ? 'is-good' : 'is-danger' ?>">
-    <div class="admin-stat-label">Gate PIN</div>
-    <div class="admin-stat-value"><?= $hasPin ? 'ON' : 'OFF' ?></div>
-    <div class="admin-stat-hint"><?= $ticketCount ?> active</div>
+  <div class="admin-stat">
+    <div class="admin-stat-label">Tickets</div>
+    <div class="admin-stat-value"><?= $ticketCount ?></div>
+    <div class="admin-stat-hint">Active on site</div>
   </div>
 </div>
 
@@ -75,13 +73,6 @@ ob_start();
       <span>
         <strong>Ticket catalog</strong>
         <span class="admin-muted">Landing prices</span>
-      </span>
-      <span aria-hidden="true">→</span>
-    </a>
-    <a class="admin-quick-link" href="<?= e(app_url('admin/gate-pin.php')) ?>">
-      <span>
-        <strong><?= $hasPin ? 'Rotate gate PIN' : 'Set gate PIN' ?></strong>
-        <span class="admin-muted">QR unlock</span>
       </span>
       <span aria-hidden="true">→</span>
     </a>

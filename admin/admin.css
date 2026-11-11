@@ -30,13 +30,13 @@
 html,
 body.admin-body {
   margin: 0;
-  min-height: 100%;
+  height: 100%;
   background: var(--admin-bg);
   color: var(--admin-ink);
   font-family: var(--admin-font);
   font-size: 15px;
   line-height: 1.45;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 a {
@@ -52,10 +52,11 @@ textarea {
 }
 
 .admin-shell {
-  min-height: 100dvh;
+  height: 100dvh;
+  max-height: 100dvh;
   display: flex;
   background: var(--admin-bg);
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .admin-overlay {
@@ -77,6 +78,7 @@ textarea {
   position: fixed;
   inset: 0 auto 0 0;
   width: min(var(--admin-sidebar-w), 86vw);
+  height: 100dvh;
   z-index: 50;
   display: flex;
   flex-direction: column;
@@ -248,8 +250,9 @@ textarea {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
-  overflow-x: hidden;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
 }
 
 .admin-topbar {
@@ -303,7 +306,16 @@ textarea {
 }
 
 .admin-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 0.9rem 0.85rem 2rem;
+  width: 100%;
+  scrollbar-width: thin;
+}
+
+.admin-content-inner {
   width: min(1100px, 100%);
   margin: 0 auto;
 }
@@ -883,6 +895,10 @@ body.admin-modal-open {
     padding: 1.15rem 1.25rem 2.5rem;
   }
 
+  .admin-content-inner {
+    width: min(1100px, 100%);
+  }
+
   .admin-panel {
     padding: 1.15rem;
   }
@@ -906,9 +922,11 @@ body.admin-modal-open {
   }
 
   .admin-sidebar {
-    position: sticky;
-    top: 0;
+    position: relative;
+    inset: auto;
+    top: auto;
     height: 100dvh;
+    max-height: 100dvh;
     transform: none;
     flex: 0 0 var(--admin-sidebar-w);
     box-shadow: none;
@@ -920,5 +938,6 @@ body.admin-modal-open {
 
   .admin-topbar {
     padding: 0.85rem 1.25rem;
+    flex: 0 0 auto;
   }
 }
