@@ -50,7 +50,6 @@ if ($ticket && request_method() === 'POST') {
                 throw new InvalidArgumentException('Enter a valid phone number (e.g. 08012345678).');
             }
 
-            // Tiered: male → Guys, female → Girls when those labels exist.
             $priceId = resolve_price_id_for_gender($ticket, $gender, $priceId);
 
             $resolved = resolve_ticket_amount($ticket, $priceId);
@@ -111,101 +110,139 @@ ob_start();
     <?php endif; ?>
 
     <?php if ($ticket): ?>
-      <form method="post" class="form-grid" id="booking-form" style="margin-top:1.25rem;">
+      <div class="booking-steps" id="booking-steps" aria-label="Booking progress">
+        <div class="booking-step is-active" data-step-indicator="1">
+          <span class="booking-step-num">1</span>
+          <span class="booking-step-label">Details</span>
+        </div>
+        <div class="booking-step-line" aria-hidden="true"></div>
+        <div class="booking-step" data-step-indicator="2">
+          <span class="booking-step-num">2</span>
+          <span class="booking-step-label">Review</span>
+        </div>
+      </div>
+
+      <form method="post" class="form-grid" id="booking-form" style="margin-top:1rem;">
         <?= csrf_field() ?>
         <input type="hidden" name="ticket_id" value="<?= (int) $ticket['id'] ?>" />
 
-        <div class="form-grid two">
-          <label>Full name
-            <input type="text" name="full_name" id="full_name" required autocomplete="name" value="<?= e(post_string('full_name')) ?>" />
-          </label>
-          <label>Email
-            <input type="email" name="email" id="email" required autocomplete="email" value="<?= e(post_string('email')) ?>" />
-          </label>
-        </div>
-
-        <div class="form-grid two">
-          <label>Phone
-            <input type="tel" name="phone" id="phone" required autocomplete="tel" inputmode="tel" placeholder="08012345678" value="<?= e(post_string('phone')) ?>" />
-          </label>
-          <label>Date of birth
-            <input
-              type="date"
-              name="date_of_birth"
-              id="date_of_birth"
-              required
-              min="<?= e($minDob) ?>"
-              max="<?= e($maxDob) ?>"
-              value="<?= e(post_string('date_of_birth')) ?>"
-              class="dob-picker"
-              inputmode="none"
-            />
-            <span class="field-hint">Must be <?= (int) $minAge ?>+. Tap to open the calendar.</span>
-          </label>
-        </div>
-
-        <div class="form-grid two">
-          <label>Gender
-            <select name="gender" id="gender" required>
-              <option value="">Select</option>
-              <option value="male" <?= post_string('gender') === 'male' ? 'selected' : '' ?>>Male</option>
-              <option value="female" <?= post_string('gender') === 'female' ? 'selected' : '' ?>>Female</option>
-            </select>
-          </label>
-
-          <?php if ($isTiered): ?>
-            <label>Ticket option
-              <select name="price_id" id="price_id" required>
-                <option value="">Select</option>
-                <?php foreach ($ticket['prices'] as $price): ?>
-                  <option
-                    value="<?= (int) $price['id'] ?>"
-                    data-label="<?= e(strtolower((string) $price['label'])) ?>"
-                    data-amount="<?= e(format_ngn($price['amount'])) ?>"
-                    data-amount-raw="<?= e(money_string($price['amount'])) ?>"
-                    <?= (string) ($_POST['price_id'] ?? '') === (string) $price['id'] ? 'selected' : '' ?>
-                  >
-                    <?= e($price['label']) ?> — <?= e(format_ngn($price['amount'])) ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
-              <span class="field-hint">Male selects Guys · Female selects Girls automatically.</span>
+        <div class="booking-panel is-active" data-booking-step="1">
+          <div class="form-grid two">
+            <label>Full name
+              <input type="text" name="full_name" id="full_name" required autocomplete="name" value="<?= e(post_string('full_name')) ?>" />
             </label>
-          <?php else: ?>
-            <div>
-              <div style="font-size:0.85rem;color:rgba(247,239,217,0.75);">Amount</div>
-              <div class="price-preview" id="single-amount"><?= e($singleAmount) ?></div>
-            </div>
-          <?php endif; ?>
-        </div>
+            <label>Email
+              <input type="email" name="email" id="email" required autocomplete="email" value="<?= e(post_string('email')) ?>" />
+            </label>
+          </div>
 
-        <div class="form-actions">
-          <button class="btn btn-primary" type="button" id="review-booking-btn">Review &amp; continue</button>
-          <a class="btn btn-ghost" href="<?= e(app_url('index.php#tickets')) ?>">Back to tickets</a>
-        </div>
-      </form>
+          <div class="form-grid two">
+            <label>Phone
+              <input type="tel" name="phone" id="phone" required autocomplete="tel" inputmode="tel" placeholder="08012345678" value="<?= e(post_string('phone')) ?>" />
+            </label>
+            <label>Date of birth
+              <input
+                type="date"
+                name="date_of_birth"
+                id="date_of_birth"
+                required
+                min="<?= e($minDob) ?>"
+                max="<?= e($maxDob) ?>"
+                value="<?= e(post_string('date_of_birth')) ?>"
+                class="dob-picker"
+                inputmode="none"
+              />
+              <span class="field-hint">Must be <?= (int) $minAge ?>+. Tap to open the calendar.</span>
+            </label>
+          </div>
 
-      <div class="booking-preview" id="booking-preview" hidden>
-        <button type="button" class="booking-preview-backdrop" id="preview-close-backdrop" aria-label="Close preview"></button>
-        <div class="booking-preview-card" role="dialog" aria-modal="true" aria-labelledby="preview-title">
-          <p class="eyebrow">Confirm</p>
-          <h2 id="preview-title">Review your booking</h2>
-          <p class="booking-preview-lede">Check everything looks right before payment.</p>
-          <dl class="booking-preview-list">
-            <div><dt>Name</dt><dd id="preview-name">—</dd></div>
-            <div><dt>Email</dt><dd id="preview-email">—</dd></div>
-            <div><dt>Phone</dt><dd id="preview-phone">—</dd></div>
-            <div><dt>Date of birth</dt><dd id="preview-dob">—</dd></div>
-            <div><dt>Gender</dt><dd id="preview-gender">—</dd></div>
-            <div><dt>Ticket</dt><dd id="preview-ticket">—</dd></div>
-            <div><dt>Amount</dt><dd id="preview-amount" class="price-preview" style="font-size:1.6rem;">—</dd></div>
-          </dl>
+          <div class="form-grid two">
+            <label>Gender
+              <select name="gender" id="gender" required>
+                <option value="">Select</option>
+                <option value="male" <?= post_string('gender') === 'male' ? 'selected' : '' ?>>Male</option>
+                <option value="female" <?= post_string('gender') === 'female' ? 'selected' : '' ?>>Female</option>
+              </select>
+            </label>
+
+            <?php if ($isTiered): ?>
+              <label>Ticket option
+                <select name="price_id" id="price_id" required>
+                  <option value="">Select</option>
+                  <?php foreach ($ticket['prices'] as $price): ?>
+                    <option
+                      value="<?= (int) $price['id'] ?>"
+                      data-label="<?= e(strtolower((string) $price['label'])) ?>"
+                      data-amount="<?= e(format_ngn($price['amount'])) ?>"
+                      <?= (string) ($_POST['price_id'] ?? '') === (string) $price['id'] ? 'selected' : '' ?>
+                    >
+                      <?= e($price['label']) ?> — <?= e(format_ngn($price['amount'])) ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
+                <span class="field-hint">Male selects Guys · Female selects Girls automatically.</span>
+              </label>
+            <?php else: ?>
+              <div>
+                <div style="font-size:0.85rem;color:rgba(247,239,217,0.75);">Amount</div>
+                <div class="price-preview" id="single-amount"><?= e($singleAmount) ?></div>
+              </div>
+            <?php endif; ?>
+          </div>
+
           <div class="form-actions">
-            <button class="btn btn-primary" type="submit" form="booking-form" id="confirm-pay-btn">Confirm &amp; pay</button>
-            <button class="btn btn-ghost" type="button" id="preview-edit-btn">Edit details</button>
+            <button class="btn btn-primary" type="button" id="review-booking-btn">Next: Review</button>
+            <a class="btn btn-ghost" href="<?= e(app_url('index.php#tickets')) ?>">Back to tickets</a>
           </div>
         </div>
-      </div>
+
+        <div class="booking-panel" data-booking-step="2" hidden>
+          <div class="booking-review">
+            <div class="booking-review-head">
+              <p class="eyebrow">Step 2</p>
+              <h2>Review your booking</h2>
+              <p>Confirm these details before payment.</p>
+            </div>
+
+            <div class="booking-review-amount">
+              <span>Total</span>
+              <strong id="preview-amount"><?= e($singleAmount ?: '—') ?></strong>
+            </div>
+
+            <div class="booking-review-grid">
+              <div class="booking-review-item">
+                <span>Guest</span>
+                <strong id="preview-name">—</strong>
+              </div>
+              <div class="booking-review-item">
+                <span>Email</span>
+                <strong id="preview-email">—</strong>
+              </div>
+              <div class="booking-review-item">
+                <span>Phone</span>
+                <strong id="preview-phone">—</strong>
+              </div>
+              <div class="booking-review-item">
+                <span>Date of birth</span>
+                <strong id="preview-dob">—</strong>
+              </div>
+              <div class="booking-review-item">
+                <span>Gender</span>
+                <strong id="preview-gender">—</strong>
+              </div>
+              <div class="booking-review-item">
+                <span>Ticket</span>
+                <strong id="preview-ticket">—</strong>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-primary" type="submit" id="confirm-pay-btn">Confirm &amp; pay</button>
+              <button class="btn btn-ghost" type="button" id="preview-edit-btn">Back to details</button>
+            </div>
+          </div>
+        </div>
+      </form>
     <?php else: ?>
       <div class="form-actions">
         <a class="btn btn-primary" href="<?= e(app_url('index.php#tickets')) ?>">View tickets</a>
@@ -221,8 +258,11 @@ ob_start();
   var gender = document.getElementById('gender');
   var priceSelect = document.getElementById('price_id');
   var dob = document.getElementById('date_of_birth');
-  var preview = document.getElementById('booking-preview');
   var reviewBtn = document.getElementById('review-booking-btn');
+  var editBtn = document.getElementById('preview-edit-btn');
+  var step1 = document.querySelector('[data-booking-step="1"]');
+  var step2 = document.querySelector('[data-booking-step="2"]');
+  var indicators = document.querySelectorAll('[data-step-indicator]');
   var ticketTitle = <?= json_encode((string) $ticket['title'], JSON_UNESCAPED_UNICODE) ?>;
   var isTiered = <?= $isTiered ? 'true' : 'false' ?>;
   var singleAmount = <?= json_encode($singleAmount, JSON_UNESCAPED_UNICODE) ?>;
@@ -239,9 +279,7 @@ ob_start();
       var label = (opt.getAttribute('data-label') || opt.textContent || '').toLowerCase();
       return label === want || label.indexOf(want) !== -1;
     });
-    if (match) {
-      priceSelect.value = match.value;
-    }
+    if (match) priceSelect.value = match.value;
   }
 
   if (gender) {
@@ -252,15 +290,12 @@ ob_start();
   function openDobPicker() {
     if (!dob) return;
     try {
-      if (typeof dob.showPicker === 'function') {
-        dob.showPicker();
-      }
+      if (typeof dob.showPicker === 'function') dob.showPicker();
     } catch (e) {}
   }
 
   if (dob) {
     dob.addEventListener('keydown', function (e) {
-      // Block typing; calendar only.
       if (e.key === 'Tab' || e.key === 'Escape') return;
       e.preventDefault();
     });
@@ -277,13 +312,10 @@ ob_start();
   }
 
   function selectedTicketLabel() {
-    if (!isTiered || !priceSelect || !priceSelect.selectedOptions.length) {
-      return ticketTitle;
-    }
+    if (!isTiered || !priceSelect || !priceSelect.selectedOptions.length) return ticketTitle;
     var opt = priceSelect.selectedOptions[0];
     if (!opt || !opt.value) return ticketTitle;
-    var label = opt.getAttribute('data-label') || '';
-    return ticketTitle + (label ? ' · ' + opt.textContent.replace(/\s+—.*$/, '').trim() : '');
+    return ticketTitle + ' · ' + opt.textContent.replace(/\s+—.*$/, '').trim();
   }
 
   function selectedAmount() {
@@ -304,9 +336,18 @@ ob_start();
     document.getElementById('preview-amount').textContent = selectedAmount();
   }
 
-  function setPreview(open) {
-    preview.hidden = !open;
-    document.body.classList.toggle('booking-preview-open', open);
+  function goToStep(step) {
+    var isReview = step === 2;
+    step1.hidden = isReview;
+    step2.hidden = !isReview;
+    step1.classList.toggle('is-active', !isReview);
+    step2.classList.toggle('is-active', isReview);
+    indicators.forEach(function (el) {
+      var n = Number(el.getAttribute('data-step-indicator'));
+      el.classList.toggle('is-active', n === step);
+      el.classList.toggle('is-done', n < step);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   if (reviewBtn) {
@@ -319,18 +360,15 @@ ob_start();
         return;
       }
       fillPreview();
-      setPreview(true);
+      goToStep(2);
     });
   }
 
-  var editBtn = document.getElementById('preview-edit-btn');
-  var backdrop = document.getElementById('preview-close-backdrop');
-  if (editBtn) editBtn.addEventListener('click', function () { setPreview(false); });
-  if (backdrop) backdrop.addEventListener('click', function () { setPreview(false); });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') setPreview(false);
-  });
+  if (editBtn) {
+    editBtn.addEventListener('click', function () {
+      goToStep(1);
+    });
+  }
 
   form.addEventListener('submit', function () {
     syncTierFromGender();
