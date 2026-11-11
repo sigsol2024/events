@@ -13,19 +13,29 @@ $bookings = bookings_list($status ?: null, 200);
 
 ob_start();
 ?>
-<section class="app-shell wide">
-  <div class="app-card">
-    <?php include __DIR__ . '/_nav.php'; ?>
-    <p class="eyebrow">Sales</p>
-    <h1>Bookings</h1>
-    <div class="admin-nav">
-      <a href="?">All</a>
+<div class="admin-page-head">
+  <div>
+    <h2>Bookings</h2>
+    <p>Filter by payment state. Paid bookings unlock QR tickets for guests.</p>
+  </div>
+</div>
+
+<div class="admin-panel">
+  <div class="admin-panel-head">
+    <h3><?= $status !== '' ? ucfirst($status) . ' bookings' : 'All bookings' ?></h3>
+    <div class="admin-filters">
+      <a class="admin-chip <?= $status === '' ? 'is-active' : '' ?>" href="?">All</a>
       <?php foreach (BOOKING_STATUSES as $s): ?>
-        <a href="?status=<?= e($s) ?>"><?= e($s) ?></a>
+        <a class="admin-chip <?= $status === $s ? 'is-active' : '' ?>" href="?status=<?= e($s) ?>"><?= e($s) ?></a>
       <?php endforeach; ?>
     </div>
-    <div class="table-wrap">
-      <table class="data">
+  </div>
+
+  <?php if (!$bookings): ?>
+    <div class="admin-empty">No bookings in this view.</div>
+  <?php else: ?>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
         <thead>
           <tr>
             <th>Ref</th><th>Guest</th><th>Ticket</th><th>Amount</th><th>Status</th><th>Paid</th><th></th>
@@ -35,10 +45,16 @@ ob_start();
         <?php foreach ($bookings as $b): ?>
           <tr>
             <td><?= e($b['reference']) ?></td>
-            <td><?= e($b['full_name']) ?><br /><span style="opacity:.7;"><?= e($b['email']) ?></span></td>
-            <td><?= e($b['ticket_title']) ?><?= $b['price_label'] ? '<br />' . e($b['price_label']) : '' ?></td>
+            <td>
+              <?= e($b['full_name']) ?>
+              <div class="admin-muted"><?= e($b['email']) ?></div>
+            </td>
+            <td>
+              <?= e($b['ticket_title']) ?>
+              <?php if ($b['price_label']): ?><div class="admin-muted"><?= e($b['price_label']) ?></div><?php endif; ?>
+            </td>
             <td>₦<?= e(number_format((float) $b['amount'], 2)) ?></td>
-            <td><span class="status-pill"><?= e($b['status']) ?></span></td>
+            <td><span class="<?= e(admin_status_class((string) $b['status'])) ?>"><?= e($b['status']) ?></span></td>
             <td><?= e((string) ($b['paid_at'] ?: '—')) ?></td>
             <td><a href="<?= e(app_url('admin/booking.php?id=' . (int) $b['id'])) ?>">View</a></td>
           </tr>
@@ -46,7 +62,7 @@ ob_start();
         </tbody>
       </table>
     </div>
-  </div>
-</section>
+  <?php endif; ?>
+</div>
 <?php
-render_layout('Bookings', ob_get_clean(), ['show_nav' => false]);
+render_admin('Bookings', ob_get_clean(), 'bookings');

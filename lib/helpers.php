@@ -147,3 +147,18 @@ function render_layout(string $title, string $content, array $options = []): voi
     $showNav = $options['show_nav'] ?? true;
     include dirname(__DIR__) . '/partials/layout.php';
 }
+
+function render_admin(string $title, string $content, string $active = 'dashboard'): void
+{
+    $admin = admin_user();
+    if (!$admin) {
+        redirect(app_url('admin/login.php'));
+    }
+    include dirname(__DIR__) . '/admin/_layout.php';
+}
+
+function admin_status_class(string $status): string
+{
+    $safe = preg_replace('/[^a-z]/', '', strtolower($status)) ?: 'pending';
+    return 'admin-status admin-status-' . $safe;
+}

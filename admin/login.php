@@ -18,21 +18,36 @@ if (request_method() === 'POST') {
         $error = 'Invalid email or password.';
     }
 }
-
-ob_start();
 ?>
-<section class="app-shell">
-  <div class="app-card">
-    <p class="eyebrow">Admin</p>
-    <h1>Sign in</h1>
-    <?php if ($error): ?><div class="alert error"><?= e($error) ?></div><?php endif; ?>
-    <form method="post" class="form-grid">
-      <?= csrf_field() ?>
-      <label>Email<input type="email" name="email" required value="<?= e(post_string('email')) ?>" /></label>
-      <label>Password<input type="password" name="password" required /></label>
-      <button class="btn btn-primary" type="submit">Login</button>
-    </form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="<?= e(app_url('admin/admin.css')) ?>" />
+</head>
+<body class="admin-body">
+  <div class="admin-login-shell">
+    <div class="admin-login-card">
+      <p class="admin-brand-kicker" style="color:#b86b00;">Tee’s Beach House</p>
+      <h1>Admin sign in</h1>
+      <p>Manage tickets, bookings, and gate access.</p>
+      <?php if ($error): ?><div class="admin-alert admin-alert-error"><?= e($error) ?></div><?php endif; ?>
+      <form method="post" class="admin-form">
+        <?= csrf_field() ?>
+        <label class="admin-label">Email
+          <input type="email" name="email" required value="<?= e(post_string('email')) ?>" autocomplete="username" />
+        </label>
+        <label class="admin-label">Password
+          <input type="password" name="password" required autocomplete="current-password" />
+        </label>
+        <button class="admin-btn admin-btn-primary" type="submit">Sign in</button>
+      </form>
+    </div>
   </div>
-</section>
-<?php
-render_layout('Admin login', ob_get_clean(), ['show_nav' => false]);
+</body>
+</html>
