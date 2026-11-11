@@ -25,6 +25,22 @@ function app_url(string $path = ''): string
     return $base . '/' . ltrim($path, '/');
 }
 
+/**
+ * Public asset URL with automatic cache-busting (?v=filemtime).
+ * Re-upload a CSS/JS file and browsers fetch the new version immediately.
+ */
+function asset_url(string $path): string
+{
+    $relative = ltrim($path, '/');
+    $url = app_url($relative);
+    $local = dirname(__DIR__) . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relative);
+    $version = is_file($local)
+        ? (string) filemtime($local)
+        : (string) config('asset_version', '1');
+
+    return $url . (str_contains($url, '?') ? '&' : '?') . 'v=' . rawurlencode($version);
+}
+
 function e(?string $value): string
 {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

@@ -28,7 +28,7 @@ if (request_method() === 'POST') {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="<?= e(app_url('admin/admin.css')) ?>?v=2" />
+  <link rel="stylesheet" href="<?= e(asset_url('admin/admin.css')) ?>" />
 </head>
 <body class="admin-body">
   <div class="admin-login-shell">

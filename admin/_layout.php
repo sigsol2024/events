@@ -20,7 +20,7 @@ $nav = [
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="<?= e(app_url('admin/admin.css')) ?>?v=4" />
+  <link rel="stylesheet" href="<?= e(asset_url('admin/admin.css')) ?>" />
 </head>
 <body class="admin-body">
   <div class="admin-shell" data-admin-shell>
@@ -93,6 +93,6 @@ $nav = [
       </main>
     </div>
   </div>
-  <script src="<?= e(app_url('admin/admin.js')) ?>?v=3"></script>
+  <script src="<?= e(asset_url('admin/admin.js')) ?>"></script>
 </body>
 </html>

@@ -13,8 +13,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="<?= e(app_url('styles.css')) ?>" />
-  <link rel="stylesheet" href="<?= e(app_url('app.css')) ?>" />
+  <link rel="stylesheet" href="<?= e(asset_url('styles.css')) ?>" />
+  <link rel="stylesheet" href="<?= e(asset_url('app.css')) ?>" />
 </head>
 <body class="<?= e($bodyClass) ?>">
 <?php if ($showNav): ?>

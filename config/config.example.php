@@ -7,6 +7,9 @@ return [
     'app_name' => "Tee's Beach House Edition",
     'app_url' => 'https://example.com', // no trailing slash
 
+    // Fallback only — CSS/JS normally bust cache via filemtime in asset_url().
+    'asset_version' => '1',
+
     'db' => [
         'host' => 'localhost',
         'port' => 3306,

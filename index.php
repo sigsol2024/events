@@ -13,7 +13,7 @@ $ticketCardsHtml = render_landing_ticket_cards();
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="<?= e(asset_url('styles.css')) ?>" />
 </head>
 <body>
   <header class="site-nav">
@@ -206,6 +206,6 @@ $ticketCardsHtml = render_landing_ticket_cards();
     <p>Love Beach, Eleko Lagos</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="<?= e(asset_url('script.js')) ?>"></script>
 </body>
 </html>

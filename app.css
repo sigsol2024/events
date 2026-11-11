@@ -238,16 +238,18 @@ table.data th {
   padding: 0;
   position: relative;
   z-index: 1;
-  display: flex;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0;
 }
 
 .booking-timeline-step {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  flex: 1 1 0;
+  display: flex !important;
+  flex-direction: column !important;
   align-items: center;
   text-align: center;
   gap: 0.4rem;

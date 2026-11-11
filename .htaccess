@@ -1,2 +1,10 @@
 DirectoryIndex index.php index.html
 Options -Indexes
+
+# Asset URLs already include ?v=filemtime via asset_url().
+# Allow short browser caching of versioned static files.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>

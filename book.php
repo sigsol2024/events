@@ -110,27 +110,40 @@ ob_start();
     <?php endif; ?>
 
     <?php if ($ticket): ?>
+      <style>
+        .booking-timeline{position:relative;margin:1.35rem 0 .5rem;padding:0 0 .25rem}
+        .booking-timeline-line{position:absolute;left:16.66%;right:16.66%;top:18px;height:3px;background:rgba(247,239,217,.2);border-radius:999px;z-index:0;overflow:hidden}
+        .booking-timeline-progress{display:block;height:100%;width:0;background:linear-gradient(90deg,#f0c43a,#e91e8c);transition:width .3s ease}
+        .booking-timeline-steps{display:flex!important;flex-direction:row!important;align-items:flex-start;justify-content:space-between;gap:0;margin:0;padding:0;list-style:none;position:relative;z-index:1}
+        .booking-timeline-step{flex:1 1 0;display:flex!important;flex-direction:column!important;align-items:center;text-align:center;gap:.4rem;color:rgba(247,239,217,.45);min-width:0}
+        .booking-timeline-dot{width:36px;height:36px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;border:2px solid rgba(240,196,58,.35);background:#2f1a10;font-size:.8rem;font-weight:700;box-shadow:0 0 0 4px #2f1a10}
+        .booking-timeline-step strong{display:block;font-size:.88rem;line-height:1.15;color:inherit}
+        .booking-timeline-step small{display:block;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;opacity:.75}
+        .booking-timeline-step.is-active,.booking-timeline-step.is-done{color:#ffe9a0}
+        .booking-timeline-step.is-active .booking-timeline-dot,.booking-timeline-step.is-done .booking-timeline-dot{border-color:#f0c43a;background:linear-gradient(135deg,#f0c43a,#e91e8c);color:#1a1208;box-shadow:0 0 0 4px #2f1a10,0 0 0 7px rgba(240,196,58,.16)}
+        @media (max-width:560px){.booking-timeline-step small{display:none}.booking-timeline-step strong{font-size:.78rem}.booking-timeline-line{left:14%;right:14%}}
+      </style>
       <div class="booking-timeline" id="booking-timeline" data-step="1" aria-label="Booking progress">
         <div class="booking-timeline-line" aria-hidden="true">
           <span class="booking-timeline-progress" id="booking-timeline-progress"></span>
         </div>
-        <ol class="booking-timeline-steps">
-          <li class="booking-timeline-step is-active" data-step-indicator="1">
+        <div class="booking-timeline-steps">
+          <div class="booking-timeline-step is-active" data-step-indicator="1">
             <span class="booking-timeline-dot" aria-hidden="true">1</span>
             <strong>Details</strong>
             <small>Your info</small>
-          </li>
-          <li class="booking-timeline-step" data-step-indicator="2">
+          </div>
+          <div class="booking-timeline-step" data-step-indicator="2">
             <span class="booking-timeline-dot" aria-hidden="true">2</span>
             <strong>Review</strong>
             <small>Confirm</small>
-          </li>
-          <li class="booking-timeline-step" data-step-indicator="3">
+          </div>
+          <div class="booking-timeline-step" data-step-indicator="3">
             <span class="booking-timeline-dot" aria-hidden="true">3</span>
             <strong>Pay</strong>
             <small>Checkout</small>
-          </li>
-        </ol>
+          </div>
+        </div>
       </div>
 
       <form method="post" class="form-grid" id="booking-form" style="margin-top:1.15rem;">
