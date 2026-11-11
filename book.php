@@ -110,31 +110,28 @@ ob_start();
     <?php endif; ?>
 
     <?php if ($ticket): ?>
-      <ol class="booking-timeline" id="booking-timeline" aria-label="Booking progress">
-        <li class="booking-timeline-item is-active" data-step-indicator="1">
-          <span class="booking-timeline-dot" aria-hidden="true">1</span>
-          <span class="booking-timeline-copy">
+      <div class="booking-timeline" id="booking-timeline" data-step="1" aria-label="Booking progress">
+        <div class="booking-timeline-line" aria-hidden="true">
+          <span class="booking-timeline-progress" id="booking-timeline-progress"></span>
+        </div>
+        <ol class="booking-timeline-steps">
+          <li class="booking-timeline-step is-active" data-step-indicator="1">
+            <span class="booking-timeline-dot" aria-hidden="true">1</span>
             <strong>Details</strong>
             <small>Your info</small>
-          </span>
-        </li>
-        <li class="booking-timeline-rail" aria-hidden="true"></li>
-        <li class="booking-timeline-item" data-step-indicator="2">
-          <span class="booking-timeline-dot" aria-hidden="true">2</span>
-          <span class="booking-timeline-copy">
+          </li>
+          <li class="booking-timeline-step" data-step-indicator="2">
+            <span class="booking-timeline-dot" aria-hidden="true">2</span>
             <strong>Review</strong>
             <small>Confirm</small>
-          </span>
-        </li>
-        <li class="booking-timeline-rail" aria-hidden="true"></li>
-        <li class="booking-timeline-item" data-step-indicator="3">
-          <span class="booking-timeline-dot" aria-hidden="true">3</span>
-          <span class="booking-timeline-copy">
+          </li>
+          <li class="booking-timeline-step" data-step-indicator="3">
+            <span class="booking-timeline-dot" aria-hidden="true">3</span>
             <strong>Pay</strong>
             <small>Checkout</small>
-          </span>
-        </li>
-      </ol>
+          </li>
+        </ol>
+      </div>
 
       <form method="post" class="form-grid" id="booking-form" style="margin-top:1.15rem;">
         <?= csrf_field() ?>
@@ -212,43 +209,73 @@ ob_start();
 
         <div class="booking-panel" data-booking-step="2" hidden>
           <div class="booking-review">
-            <div class="booking-review-ticket">
-              <div class="booking-review-ticket-main">
-                <p class="booking-review-kicker">You’re booking</p>
-                <h2 id="preview-ticket-title"><?= e($ticket['title']) ?></h2>
-                <p class="booking-review-tier" id="preview-tier">Standard</p>
-              </div>
-              <div class="booking-review-ticket-price">
+            <div class="booking-total-card">
+              <div class="booking-total-card-copy">
                 <span>Total due</span>
-                <strong id="preview-amount"><?= e($singleAmount ?: '—') ?></strong>
+                <p>Payable now via Bachs checkout</p>
               </div>
+              <strong id="preview-amount"><?= e($singleAmount ?: '—') ?></strong>
             </div>
 
-            <div class="booking-review-guest">
-              <div class="booking-review-avatar" id="preview-avatar" aria-hidden="true">T</div>
-              <div class="booking-review-guest-copy">
-                <strong id="preview-name">—</strong>
-                <div class="booking-review-chips">
-                  <span class="booking-chip" id="preview-gender">—</span>
-                  <span class="booking-chip" id="preview-dob">—</span>
+            <div class="booking-review-columns">
+              <article class="booking-card">
+                <header class="booking-card-head">
+                  <span class="booking-card-icon" aria-hidden="true">G</span>
+                  <div>
+                    <p class="booking-card-label">Guest</p>
+                    <h3 id="preview-name">—</h3>
+                  </div>
+                </header>
+                <div class="booking-card-body booking-card-body-2">
+                  <div>
+                    <span>Gender</span>
+                    <strong id="preview-gender">—</strong>
+                  </div>
+                  <div>
+                    <span>Date of birth</span>
+                    <strong id="preview-dob">—</strong>
+                  </div>
                 </div>
-              </div>
+              </article>
+
+              <article class="booking-card booking-card-ticket">
+                <header class="booking-card-head">
+                  <span class="booking-card-icon" aria-hidden="true">T</span>
+                  <div>
+                    <p class="booking-card-label">Ticket</p>
+                    <h3 id="preview-ticket-title"><?= e($ticket['title']) ?></h3>
+                  </div>
+                </header>
+                <div class="booking-card-body">
+                  <div>
+                    <span>Option</span>
+                    <strong id="preview-tier">Standard</strong>
+                  </div>
+                </div>
+              </article>
+
+              <article class="booking-card">
+                <header class="booking-card-head">
+                  <span class="booking-card-icon" aria-hidden="true">E</span>
+                  <div>
+                    <p class="booking-card-label">Email</p>
+                    <h3 id="preview-email">—</h3>
+                  </div>
+                </header>
+              </article>
+
+              <article class="booking-card">
+                <header class="booking-card-head">
+                  <span class="booking-card-icon" aria-hidden="true">P</span>
+                  <div>
+                    <p class="booking-card-label">Phone</p>
+                    <h3 id="preview-phone">—</h3>
+                  </div>
+                </header>
+              </article>
             </div>
 
-            <div class="booking-review-contact">
-              <div class="booking-review-contact-item">
-                <span>Email</span>
-                <strong id="preview-email">—</strong>
-              </div>
-              <div class="booking-review-contact-item">
-                <span>Phone</span>
-                <strong id="preview-phone">—</strong>
-              </div>
-            </div>
-
-            <p class="booking-review-note">Next you’ll complete secure payment with Bachs.</p>
-
-            <div class="form-actions">
+            <div class="form-actions booking-review-actions">
               <button class="btn btn-primary" type="submit" id="confirm-pay-btn">Confirm &amp; pay</button>
               <button class="btn btn-ghost" type="button" id="preview-edit-btn">Back to details</button>
             </div>
@@ -274,6 +301,8 @@ ob_start();
   var editBtn = document.getElementById('preview-edit-btn');
   var step1 = document.querySelector('[data-booking-step="1"]');
   var step2 = document.querySelector('[data-booking-step="2"]');
+  var timeline = document.getElementById('booking-timeline');
+  var progress = document.getElementById('booking-timeline-progress');
   var indicators = document.querySelectorAll('[data-step-indicator]');
   var ticketTitle = <?= json_encode((string) $ticket['title'], JSON_UNESCAPED_UNICODE) ?>;
   var isTiered = <?= $isTiered ? 'true' : 'false' ?>;
@@ -349,9 +378,7 @@ ob_start();
 
   function fillPreview() {
     var name = document.getElementById('full_name').value.trim() || 'Guest';
-    var initial = name.charAt(0).toUpperCase() || 'G';
     document.getElementById('preview-name').textContent = name;
-    document.getElementById('preview-avatar').textContent = initial;
     document.getElementById('preview-email').textContent = document.getElementById('email').value.trim() || '—';
     document.getElementById('preview-phone').textContent = document.getElementById('phone').value.trim() || '—';
     document.getElementById('preview-dob').textContent = formatDob(dob.value);
@@ -362,16 +389,20 @@ ob_start();
   }
 
   function markTimeline(step) {
-    var rails = document.querySelectorAll('.booking-timeline-rail');
+    if (timeline) timeline.setAttribute('data-step', String(step));
     indicators.forEach(function (el) {
       var n = Number(el.getAttribute('data-step-indicator'));
       el.classList.toggle('is-active', n === step);
       el.classList.toggle('is-done', n < step);
     });
-    rails.forEach(function (rail, index) {
-      rail.classList.toggle('is-filled', index < step - 1);
-    });
+    // Line fills between centers of steps 1→2→3
+    if (progress) {
+      var pct = step <= 1 ? 0 : (step === 2 ? 50 : 100);
+      progress.style.width = pct + '%';
+    }
   }
+
+  markTimeline(1);
 
   function goToStep(step) {
     var isReview = step >= 2;
