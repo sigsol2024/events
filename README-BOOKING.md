@@ -28,6 +28,15 @@ Subscribe at least to:
 Do **not** treat `collection.failed` as a terminal booking failure — Bachs keeps the checkout open for retry.
 
 If this database was imported before the Bachs hardening pass, also run `sql/patches/001_bachs_hardening.sql`.
+For incomplete-booking resume/emails, also run `sql/patches/002_incomplete_booking_resume.sql`.
 
-## 5. Landing page
-`index.html` loads tickets from `/api/tickets.php` and booking CTAs go to `book.php`.
+## 5. Incomplete bookings
+- Starting checkout emails the buyer a **Complete payment** link.
+- Cancel/return from Bachs lands on `resume.php` for that booking.
+- Rebooking the same ticket with the same email **resumes** the open booking (no duplicate).
+- Schedule a cron hit every 10–15 minutes:
+  `https://YOUR_DOMAIN/api/cron/booking-maintenance.php?key=YOUR_SETUP_KEY`
+  It expires stale checkouts and sends reminder emails.
+
+## 6. Landing page
+`index.php` renders tickets from the database; booking CTAs go to `book.php`.

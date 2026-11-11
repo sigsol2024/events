@@ -80,7 +80,7 @@ function normalize_phone_e164(string $phone): string
     return '+' . $digits;
 }
 
-function bachs_create_checkout(array $booking): array
+function bachs_create_checkout(array $booking, ?string $idempotencyKey = null): array
 {
     $payload = [
         'pricing' => [
@@ -94,7 +94,11 @@ function bachs_create_checkout(array $booking): array
         ],
         'reference' => $booking['reference'],
         'success_url' => app_url('thank-you.php?ref=' . urlencode($booking['reference']) . '&token=' . urlencode($booking['access_token'])),
-        'cancel_url' => app_url('book.php?ticket_id=' . (int) $booking['ticket_id'] . '&cancelled=1'),
+        'cancel_url' => app_url(
+            'resume.php?ref=' . urlencode((string) $booking['reference'])
+            . '&token=' . urlencode((string) $booking['access_token'])
+            . '&cancelled=1'
+        ),
         'metadata' => [
             'booking_id' => (string) $booking['id'],
             'reference' => (string) $booking['reference'],
@@ -109,7 +113,8 @@ function bachs_create_checkout(array $booking): array
         $payload['payment_method_types'] = array_values($methods);
     }
 
-    return bachs_request('POST', '/v1/checkout-sessions', $payload, 'checkout-' . $booking['reference']);
+    $key = $idempotencyKey ?: ('checkout-' . $booking['reference']);
+    return bachs_request('POST', '/v1/checkout-sessions', $payload, $key);
 }
 
 function bachs_get_checkout(string $checkoutId): array

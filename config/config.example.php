@@ -26,6 +26,8 @@ return [
         // Optional: restrict corridors. Leave empty array to use account defaults.
         'payment_method_types' => ['NGN_CARD', 'NGN_BANK_TRANSFER'],
         'checkout_expires_minutes' => 60,
+        // Minutes after booking create before a follow-up “complete payment” reminder.
+        'incomplete_reminder_minutes' => 20,
     ],
 
     'mail' => [

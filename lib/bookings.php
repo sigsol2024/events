@@ -75,8 +75,13 @@ function booking_find_by_access_token(string $token): ?array
     return $row ?: null;
 }
 
-function booking_update_checkout(int $id, string $checkoutId, string $reference): void
-{
+function booking_update_checkout(
+    int $id,
+    string $checkoutId,
+    string $reference,
+    ?string $checkoutUrl = null,
+    ?DateTimeInterface $expiresAt = null
+): void {
     // Refuse to bind a checkout id that already belongs to another booking.
     $clash = db()->prepare(
         'SELECT id FROM bookings WHERE bachs_checkout_id = ? AND id <> ? LIMIT 1'
@@ -86,10 +91,152 @@ function booking_update_checkout(int $id, string $checkoutId, string $reference)
         throw new RuntimeException('Checkout session already linked to another booking.');
     }
 
+    $expires = $expiresAt
+        ? $expiresAt->format('Y-m-d H:i:s')
+        : (new DateTimeImmutable('now'))
+            ->modify('+' . max(1, (int) config('bachs.checkout_expires_minutes', 60)) . ' minutes')
+            ->format('Y-m-d H:i:s');
+
     $stmt = db()->prepare(
-        'UPDATE bookings SET bachs_checkout_id = ?, bachs_reference = ?, status = IF(status = \'pending\', \'processing\', status), updated_at = NOW() WHERE id = ?'
+        'UPDATE bookings
+         SET bachs_checkout_id = ?,
+             bachs_checkout_url = COALESCE(?, bachs_checkout_url),
+             bachs_reference = ?,
+             checkout_expires_at = ?,
+             status = IF(status = \'pending\', \'processing\', status),
+             updated_at = NOW()
+         WHERE id = ?'
     );
-    $stmt->execute([$checkoutId, $reference, $id]);
+    $stmt->execute([$checkoutId, $checkoutUrl, $reference, $expires, $id]);
+}
+
+/**
+ * Latest unfinished booking for this email + ticket (pending/processing).
+ */
+function booking_find_open_for_email_ticket(string $email, int $ticketId): ?array
+{
+    $stmt = db()->prepare(
+        "SELECT * FROM bookings
+         WHERE email = ?
+           AND ticket_id = ?
+           AND status IN ('pending', 'processing')
+         ORDER BY id DESC
+         LIMIT 1"
+    );
+    $stmt->execute([strtolower(trim($email)), $ticketId]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+function booking_is_checkout_open(array $booking): bool
+{
+    if (!in_array(($booking['status'] ?? ''), ['pending', 'processing'], true)) {
+        return false;
+    }
+    if (empty($booking['bachs_checkout_url']) && empty($booking['bachs_checkout_id'])) {
+        return false;
+    }
+    if (!empty($booking['checkout_expires_at'])) {
+        return strtotime((string) $booking['checkout_expires_at']) > time();
+    }
+    return true;
+}
+
+function booking_expire_if_stale(array $booking): array
+{
+    if (!in_array(($booking['status'] ?? ''), ['pending', 'processing'], true)) {
+        return $booking;
+    }
+    if (!empty($booking['checkout_expires_at']) && strtotime((string) $booking['checkout_expires_at']) <= time()) {
+        booking_set_status((int) $booking['id'], 'expired');
+        return booking_find_by_id((int) $booking['id']) ?: $booking;
+    }
+    return $booking;
+}
+
+function booking_update_guest_details(int $id, array $data): void
+{
+    $stmt = db()->prepare(
+        'UPDATE bookings SET
+            full_name = ?, email = ?, phone = ?, date_of_birth = ?, gender = ?,
+            price_id = ?, price_label = ?, amount = ?, currency = ?,
+            updated_at = NOW()
+         WHERE id = ?'
+    );
+    $stmt->execute([
+        $data['full_name'],
+        strtolower((string) $data['email']),
+        $data['phone'],
+        $data['date_of_birth'],
+        $data['gender'],
+        $data['price_id'],
+        $data['price_label'],
+        money_string($data['amount']),
+        $data['currency'] ?? 'NGN',
+        $id,
+    ]);
+}
+
+function booking_resume_url(array $booking): string
+{
+    return app_url(
+        'resume.php?ref=' . urlencode((string) $booking['reference'])
+        . '&token=' . urlencode((string) $booking['access_token'])
+    );
+}
+
+function booking_mark_incomplete_notified(int $id): void
+{
+    $stmt = db()->prepare(
+        'UPDATE bookings SET incomplete_notified_at = NOW(), updated_at = NOW()
+         WHERE id = ? AND incomplete_notified_at IS NULL'
+    );
+    $stmt->execute([$id]);
+}
+
+function booking_mark_incomplete_reminded(int $id): void
+{
+    $stmt = db()->prepare(
+        'UPDATE bookings SET incomplete_reminded_at = NOW(), updated_at = NOW()
+         WHERE id = ? AND incomplete_reminded_at IS NULL'
+    );
+    $stmt->execute([$id]);
+}
+
+/**
+ * Open bookings that got the first email but still need a follow-up reminder.
+ */
+function bookings_needing_incomplete_reminder(int $olderThanMinutes = 20, int $limit = 50): array
+{
+    $stmt = db()->prepare(
+        "SELECT * FROM bookings
+         WHERE status IN ('pending', 'processing')
+           AND incomplete_notified_at IS NOT NULL
+           AND incomplete_reminded_at IS NULL
+           AND incomplete_notified_at <= (NOW() - INTERVAL ? MINUTE)
+           AND (checkout_expires_at IS NULL OR checkout_expires_at > NOW())
+         ORDER BY id ASC
+         LIMIT ?"
+    );
+    $stmt->bindValue(1, $olderThanMinutes, PDO::PARAM_INT);
+    $stmt->bindValue(2, $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+
+function bookings_expire_stale(int $limit = 100): int
+{
+    $stmt = db()->prepare(
+        "UPDATE bookings
+         SET status = 'expired', updated_at = NOW()
+         WHERE status IN ('pending', 'processing')
+           AND checkout_expires_at IS NOT NULL
+           AND checkout_expires_at <= NOW()
+         LIMIT ?"
+    );
+    $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->rowCount();
 }
 
 function booking_set_status(int $id, string $status): void

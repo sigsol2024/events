@@ -29,6 +29,101 @@ function send_booking_emails(array $booking): void
     }
 }
 
+/**
+ * Email the buyer to finish payment (abandon recovery).
+ * $kind: 'initial' (first email) | 'reminder' (follow-up cron)
+ */
+function send_incomplete_booking_email(array $booking, string $kind = 'initial'): bool
+{
+    $fresh = booking_find_by_id((int) $booking['id']) ?: $booking;
+    if (!in_array(($fresh['status'] ?? ''), ['pending', 'processing'], true)) {
+        return false;
+    }
+    if ($kind === 'initial' && !empty($fresh['incomplete_notified_at'])) {
+        return false;
+    }
+    if ($kind === 'reminder' && !empty($fresh['incomplete_reminded_at'])) {
+        return false;
+    }
+
+    $resumeUrl = booking_resume_url($fresh);
+    $payUrl = !empty($fresh['bachs_checkout_url'])
+        ? (string) $fresh['bachs_checkout_url']
+        : $resumeUrl;
+
+    $subject = $kind === 'reminder'
+        ? 'Reminder: complete your Beach House booking — ' . $fresh['reference']
+        : 'Complete your Beach House booking — ' . $fresh['reference'];
+
+    $ok = send_html_mail(
+        (string) $fresh['email'],
+        $subject,
+        render_email_template('incomplete-booking', [
+            'booking' => $fresh,
+            'resumeUrl' => $resumeUrl,
+            'payUrl' => $payUrl,
+        ])
+    );
+
+    if ($ok) {
+        if ($kind === 'reminder') {
+            booking_mark_incomplete_reminded((int) $fresh['id']);
+            if (empty($fresh['incomplete_notified_at'])) {
+                booking_mark_incomplete_notified((int) $fresh['id']);
+            }
+        } else {
+            booking_mark_incomplete_notified((int) $fresh['id']);
+        }
+    }
+    return $ok;
+}
+
+/**
+ * Create/refresh Bachs checkout for a booking and persist URL + expiry.
+ * @param bool $forceNewSession use a new idempotency key (after expiry / amount change)
+ */
+function booking_start_or_refresh_checkout(array $booking, bool $forceNewSession = false): array
+{
+    if (in_array(($booking['status'] ?? ''), ['expired', 'failed'], true)) {
+        booking_set_status((int) $booking['id'], 'pending');
+        $booking = booking_find_by_id((int) $booking['id']) ?: $booking;
+    }
+
+    $idempotency = $forceNewSession
+        ? 'checkout-' . $booking['reference'] . '-' . bin2hex(random_bytes(4))
+        : 'checkout-' . $booking['reference'];
+
+    $checkout = bachs_create_checkout($booking, $idempotency);
+    $checkoutId = (string) ($checkout['checkout_id'] ?? '');
+    $checkoutUrl = (string) ($checkout['checkout_url'] ?? '');
+    if ($checkoutId === '' || $checkoutUrl === '') {
+        throw new RuntimeException('Payment checkout could not be started. Try again.');
+    }
+
+    $expiresAt = null;
+    if (!empty($checkout['expires_at'])) {
+        try {
+            $expiresAt = new DateTimeImmutable((string) $checkout['expires_at']);
+        } catch (Throwable) {
+            $expiresAt = null;
+        }
+    }
+
+    booking_update_checkout(
+        (int) $booking['id'],
+        $checkoutId,
+        (string) $booking['reference'],
+        $checkoutUrl,
+        $expiresAt
+    );
+
+    $fresh = booking_find_by_id((int) $booking['id']);
+    if (!$fresh) {
+        throw new RuntimeException('Booking disappeared after checkout create.');
+    }
+    return $fresh;
+}
+
 function render_email_template(string $name, array $vars): string
 {
     extract($vars, EXTR_SKIP);

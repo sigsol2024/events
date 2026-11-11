@@ -51,8 +51,55 @@ if ($ticket && request_method() === 'POST') {
             }
 
             $priceId = resolve_price_id_for_gender($ticket, $gender, $priceId);
-
             $resolved = resolve_ticket_amount($ticket, $priceId);
+            $guestPayload = [
+                'full_name' => $fullName,
+                'email' => $email,
+                'phone' => $phoneNormalized,
+                'date_of_birth' => $dob,
+                'gender' => $gender,
+                'price_id' => $resolved['price_id'],
+                'price_label' => $resolved['price_label'],
+                'amount' => $resolved['amount'],
+                'currency' => (string) config('currency', 'NGN'),
+            ];
+
+            // Resume an unfinished booking for the same email + ticket instead of stacking duplicates.
+            $open = booking_find_open_for_email_ticket($email, (int) $ticket['id']);
+            if ($open) {
+                $open = booking_expire_if_stale($open);
+            }
+
+            if ($open && in_array(($open['status'] ?? ''), ['pending', 'processing'], true)) {
+                booking_update_guest_details((int) $open['id'], $guestPayload);
+                $booking = booking_find_by_id((int) $open['id']);
+                if (!$booking) {
+                    throw new RuntimeException('Could not resume your previous booking.');
+                }
+
+                $amountChanged = !amounts_match((string) $open['amount'], (string) $resolved['amount']);
+                $needsFreshCheckout = $amountChanged || !booking_is_checkout_open($booking);
+
+                try {
+                    if ($needsFreshCheckout) {
+                        $booking = booking_start_or_refresh_checkout($booking, true);
+                    }
+                } catch (Throwable $e) {
+                    booking_set_status((int) $booking['id'], 'failed');
+                    throw $e;
+                }
+
+                if (empty($booking['incomplete_notified_at'])) {
+                    send_incomplete_booking_email($booking, 'initial');
+                }
+                $checkoutUrl = (string) ($booking['bachs_checkout_url'] ?? '');
+                if ($checkoutUrl === '') {
+                    $booking = booking_start_or_refresh_checkout($booking, true);
+                    $checkoutUrl = (string) ($booking['bachs_checkout_url'] ?? '');
+                }
+                redirect($checkoutUrl);
+            }
+
             $booking = booking_create([
                 'ticket_id' => (int) $ticket['id'],
                 'ticket_title' => $ticket['title'],
@@ -68,21 +115,15 @@ if ($ticket && request_method() === 'POST') {
             ]);
 
             try {
-                $checkout = bachs_create_checkout($booking);
+                $booking = booking_start_or_refresh_checkout($booking, false);
             } catch (Throwable $e) {
                 booking_set_status((int) $booking['id'], 'failed');
                 throw $e;
             }
 
-            $checkoutId = (string) ($checkout['checkout_id'] ?? '');
-            $checkoutUrl = (string) ($checkout['checkout_url'] ?? '');
-            if ($checkoutId === '' || $checkoutUrl === '') {
-                booking_set_status((int) $booking['id'], 'failed');
-                throw new RuntimeException('Payment checkout could not be started. Try again.');
-            }
-
-            booking_update_checkout((int) $booking['id'], $checkoutId, (string) $booking['reference']);
-            redirect($checkoutUrl);
+            // Immediate “finish payment” email so leaving checkout is recoverable.
+            send_incomplete_booking_email($booking, 'initial');
+            redirect((string) $booking['bachs_checkout_url']);
         } catch (Throwable $e) {
             $error = $e->getMessage();
         }

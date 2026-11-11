@@ -62,12 +62,16 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   `currency` CHAR(3) NOT NULL DEFAULT 'NGN',
   `status` ENUM('pending','processing','paid','failed','expired','refunded') NOT NULL DEFAULT 'pending',
   `bachs_checkout_id` VARCHAR(120) NULL,
+  `bachs_checkout_url` VARCHAR(500) NULL,
   `bachs_reference` VARCHAR(128) NULL,
+  `checkout_expires_at` DATETIME NULL,
   `ticket_code` VARCHAR(64) NULL,
   `access_token` VARCHAR(64) NULL,
   `paid_at` DATETIME NULL,
   `admin_notified_at` DATETIME NULL,
   `buyer_notified_at` DATETIME NULL,
+  `incomplete_notified_at` DATETIME NULL,
+  `incomplete_reminded_at` DATETIME NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -77,6 +81,7 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   UNIQUE KEY `bookings_checkout_unique` (`bachs_checkout_id`),
   KEY `bookings_status` (`status`),
   KEY `bookings_ticket_id` (`ticket_id`),
+  KEY `bookings_open_lookup` (`email`, `ticket_id`, `status`),
   CONSTRAINT `bookings_ticket_fk`
     FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
