@@ -28,12 +28,12 @@ if (request_method() === 'POST') {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="<?= e(app_url('admin/admin.css')) ?>" />
+  <link rel="stylesheet" href="<?= e(app_url('admin/admin.css')) ?>?v=2" />
 </head>
 <body class="admin-body">
   <div class="admin-login-shell">
     <div class="admin-login-card">
-      <p class="admin-brand-kicker" style="color:#b86b00;">Tee’s Beach House</p>
+      <p class="admin-brand-kicker">Tee’s Beach House</p>
       <h1>Admin sign in</h1>
       <p>Manage tickets, bookings, and gate access.</p>
       <?php if ($error): ?><div class="admin-alert admin-alert-error"><?= e($error) ?></div><?php endif; ?>
@@ -45,7 +45,7 @@ if (request_method() === 'POST') {
         <label class="admin-label">Password
           <input type="password" name="password" required autocomplete="current-password" />
         </label>
-        <button class="admin-btn admin-btn-primary" type="submit">Sign in</button>
+        <button class="admin-btn admin-btn-primary" type="submit" style="background:#dc2626;">Sign in</button>
       </form>
     </div>
   </div>

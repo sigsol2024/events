@@ -16,13 +16,13 @@ ob_start();
 <div class="admin-page-head">
   <div>
     <h2>Bookings</h2>
-    <p>Filter by payment state. Paid bookings unlock QR tickets for guests.</p>
+    <p>Filter by payment state. Paid bookings unlock QR tickets.</p>
   </div>
 </div>
 
 <div class="admin-panel">
   <div class="admin-panel-head">
-    <h3><?= $status !== '' ? ucfirst($status) . ' bookings' : 'All bookings' ?></h3>
+    <h3><?= $status !== '' ? ucfirst($status) : 'All' ?></h3>
     <div class="admin-filters">
       <a class="admin-chip <?= $status === '' ? 'is-active' : '' ?>" href="?">All</a>
       <?php foreach (BOOKING_STATUSES as $s): ?>
@@ -44,19 +44,19 @@ ob_start();
         <tbody>
         <?php foreach ($bookings as $b): ?>
           <tr>
-            <td><?= e($b['reference']) ?></td>
-            <td>
+            <td data-label="Ref"><?= e($b['reference']) ?></td>
+            <td data-label="Guest">
               <?= e($b['full_name']) ?>
               <div class="admin-muted"><?= e($b['email']) ?></div>
             </td>
-            <td>
+            <td data-label="Ticket">
               <?= e($b['ticket_title']) ?>
               <?php if ($b['price_label']): ?><div class="admin-muted"><?= e($b['price_label']) ?></div><?php endif; ?>
             </td>
-            <td>₦<?= e(number_format((float) $b['amount'], 2)) ?></td>
-            <td><span class="<?= e(admin_status_class((string) $b['status'])) ?>"><?= e($b['status']) ?></span></td>
-            <td><?= e((string) ($b['paid_at'] ?: '—')) ?></td>
-            <td><a href="<?= e(app_url('admin/booking.php?id=' . (int) $b['id'])) ?>">View</a></td>
+            <td data-label="Amount">₦<?= e(number_format((float) $b['amount'], 2)) ?></td>
+            <td data-label="Status"><span class="<?= e(admin_status_class((string) $b['status'])) ?>"><?= e($b['status']) ?></span></td>
+            <td data-label="Paid"><?= e((string) ($b['paid_at'] ?: '—')) ?></td>
+            <td data-label=""><a class="admin-btn admin-btn-secondary admin-btn-sm" href="<?= e(app_url('admin/booking.php?id=' . (int) $b['id'])) ?>">View</a></td>
           </tr>
         <?php endforeach; ?>
         </tbody>

@@ -20,7 +20,7 @@ $nav = [
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="<?= e(app_url('admin/admin.css')) ?>" />
+  <link rel="stylesheet" href="<?= e(app_url('admin/admin.css')) ?>?v=2" />
 </head>
 <body class="admin-body">
   <div class="admin-shell" data-admin-shell>
@@ -33,7 +33,7 @@ $nav = [
           <p class="admin-brand-title">Beach House</p>
         </div>
         <button class="admin-icon-btn admin-sidebar-close" type="button" data-admin-close aria-label="Close menu">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
 
@@ -69,8 +69,8 @@ $nav = [
           <strong><?= e((string) ($admin['email'] ?? 'Admin')) ?></strong>
           <span>Signed in</span>
         </div>
-        <a class="admin-btn admin-btn-ghost" style="color:#f7efd9;border-color:rgba(240,196,58,.25);" href="<?= e(app_url('admin/logout.php')) ?>">Log out</a>
-        <a class="admin-btn admin-btn-ghost" style="color:#f7efd9;border-color:rgba(240,196,58,.25);" href="<?= e(app_url('index.html')) ?>" target="_blank" rel="noopener">View event site</a>
+        <a class="admin-side-link" href="<?= e(app_url('index.html')) ?>" target="_blank" rel="noopener">View event site</a>
+        <a class="admin-side-link is-logout" href="<?= e(app_url('admin/logout.php')) ?>">Log out</a>
       </div>
     </aside>
 
@@ -83,7 +83,7 @@ $nav = [
           <h1><?= e($title) ?></h1>
         </div>
         <div class="admin-topbar-actions">
-          <a class="admin-btn admin-btn-secondary" href="<?= e(app_url('admin/bookings.php?status=paid')) ?>">Paid bookings</a>
+          <a class="admin-btn admin-btn-secondary admin-btn-sm" href="<?= e(app_url('admin/bookings.php?status=paid')) ?>">Paid</a>
         </div>
       </header>
 
@@ -92,6 +92,6 @@ $nav = [
       </main>
     </div>
   </div>
-  <script src="<?= e(app_url('admin/admin.js')) ?>"></script>
+  <script src="<?= e(app_url('admin/admin.js')) ?>?v=2"></script>
 </body>
 </html>
