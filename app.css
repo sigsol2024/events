@@ -188,6 +188,112 @@ table.data th {
   color: #1a1208;
 }
 
+.field-hint {
+  font-size: 0.75rem;
+  color: rgba(247, 239, 217, 0.55);
+  margin-top: 0.15rem;
+}
+
+.dob-picker {
+  cursor: pointer;
+  color-scheme: dark;
+}
+
+.dob-picker::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.85;
+  filter: invert(1);
+}
+
+.booking-preview[hidden] {
+  display: none !important;
+}
+
+.booking-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+.booking-preview-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(7, 17, 31, 0.72);
+  cursor: pointer;
+}
+
+.booking-preview-card {
+  position: relative;
+  z-index: 1;
+  width: min(520px, 100%);
+  max-height: min(92dvh, 860px);
+  overflow: auto;
+  background: linear-gradient(160deg, #5a3422 0%, #2f1a10 100%);
+  border: 1px solid rgba(240, 196, 58, 0.35);
+  border-radius: 18px 18px 0 0;
+  padding: 1.35rem 1.2rem 1.5rem;
+  color: var(--sand-text, #f7efd9);
+  box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.35);
+}
+
+.booking-preview-card h2 {
+  font-family: var(--font-script, "Cormorant Garamond", Georgia, serif);
+  margin: 0 0 0.35rem;
+  color: #fff;
+}
+
+.booking-preview-lede {
+  margin: 0 0 1rem;
+  color: rgba(247, 239, 217, 0.75);
+  font-size: 0.92rem;
+}
+
+.booking-preview-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 1.15rem;
+}
+
+.booking-preview-list > div {
+  display: grid;
+  gap: 0.15rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid rgba(240, 196, 58, 0.18);
+}
+
+.booking-preview-list dt {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(247, 239, 217, 0.55);
+}
+
+.booking-preview-list dd {
+  margin: 0;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+body.booking-preview-open {
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .booking-preview {
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .booking-preview-card {
+    border-radius: 16px;
+  }
+}
+
 @media (max-width: 700px) {
   .form-grid.two,
   .tier-row {

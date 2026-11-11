@@ -115,6 +115,31 @@ function ticket_price_find(int $priceId): ?array
     return $row ?: null;
 }
 
+/**
+ * For tiered tickets, map gender to Guys/Girls price rows when those labels exist.
+ */
+function resolve_price_id_for_gender(array $ticket, string $gender, ?int $priceId = null): ?int
+{
+    if (($ticket['pricing_mode'] ?? '') !== 'tiered') {
+        return $priceId;
+    }
+
+    $gender = strtolower(trim($gender));
+    $want = $gender === 'male' ? 'guys' : ($gender === 'female' ? 'girls' : '');
+    if ($want === '') {
+        return $priceId;
+    }
+
+    foreach ($ticket['prices'] ?? [] as $price) {
+        $label = strtolower(trim((string) ($price['label'] ?? '')));
+        if ($label === $want || str_contains($label, $want)) {
+            return (int) $price['id'];
+        }
+    }
+
+    return $priceId;
+}
+
 function resolve_ticket_amount(array $ticket, ?int $priceId): array
 {
     $prices = $ticket['prices'] ?? ticket_prices((int) $ticket['id']);
