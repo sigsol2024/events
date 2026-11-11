@@ -636,6 +636,11 @@ textarea {
   background: #f9fafb;
 }
 
+.admin-tier-row.is-single .tier-label,
+.admin-tier-row.is-single .remove-tier {
+  display: none !important;
+}
+
 .admin-detail-grid {
   display: grid;
   gap: 0.65rem;
