@@ -23,6 +23,7 @@ $ticketCardsHtml = render_landing_ticket_cards();
       <a href="#includes">Includes</a>
       <a href="#tickets">Tickets</a>
       <a href="#policies">Policies</a>
+      <a href="#terms">Terms</a>
       <a class="nav-cta" href="tel:08087791773">Reserve</a>
     </nav>
   </header>
@@ -198,6 +199,92 @@ $ticketCardsHtml = render_landing_ticket_cards();
             <span>Bookings are subject to availability, including limited exclusive table packages.</span>
           </li>
         </ul>
+      </div>
+    </section>
+
+    <section class="section terms sand" id="terms">
+      <div class="section-inner">
+        <p class="eyebrow dark">Important event disclaimer</p>
+        <h2 class="section-title dark">Terms &amp; conditions</h2>
+        <p class="section-lede dark">By attending Tee's Beach House Edition, all guests agree to the following rules and regulations.</p>
+
+        <div class="terms-list">
+          <article class="terms-item">
+            <h3>1. Pool &amp; water safety</h3>
+            <ul>
+              <li>Swimming is at your own risk.</li>
+              <li>Guests must exercise caution around the pool and beach areas.</li>
+              <li>No pushing, rough play, running or dangerous behaviour around the pool.</li>
+              <li>Non-swimmers should stay out of the pool unless appropriate supervision is available.</li>
+              <li>Guests must follow all pool safety instructions provided by venue staff.</li>
+            </ul>
+          </article>
+
+          <article class="terms-item">
+            <h3>2. Fights &amp; disruptive behaviour</h3>
+            <ul>
+              <li>Fighting, harassment, bullying, threats and violence will not be tolerated.</li>
+              <li>Anyone involved in physical altercations or disruptive behaviour may be immediately removed from the event without a refund.</li>
+              <li>Weapons and dangerous objects are strictly prohibited.</li>
+            </ul>
+          </article>
+
+          <article class="terms-item">
+            <h3>3. Alcohol &amp; personal conduct</h3>
+            <ul>
+              <li>Drink responsibly and know your limits.</li>
+              <li>No underage drinking.</li>
+              <li>Guests are responsible for their actions and behaviour.</li>
+              <li>Anyone behaving dangerously or putting others at risk may be denied further access to the event.</li>
+            </ul>
+          </article>
+
+          <article class="terms-item">
+            <h3>4. Personal belongings</h3>
+            <ul>
+              <li>Guests are responsible for their phones, money, jewellery and other personal belongings.</li>
+              <li>The organisers will not be responsible for lost, stolen or unattended items.</li>
+            </ul>
+          </article>
+
+          <article class="terms-item">
+            <h3>5. Damage to property</h3>
+            <ul>
+              <li>Any guest who deliberately damages the venue, furniture, equipment or other property will be held responsible for the cost of repairs or replacement.</li>
+            </ul>
+          </article>
+
+          <article class="terms-item">
+            <h3>6. Respect &amp; decorum</h3>
+            <ul>
+              <li>Respect other guests, event staff and the venue.</li>
+              <li>Harassment, unwanted physical contact, discrimination and inappropriate behaviour will not be tolerated.</li>
+            </ul>
+          </article>
+
+          <article class="terms-item">
+            <h3>7. Emergencies &amp; safety</h3>
+            <ul>
+              <li>Guests must follow instructions from security personnel and venue management.</li>
+              <li>Report accidents, injuries or unsafe situations to event staff immediately.</li>
+              <li>In an emergency, follow the venue’s emergency procedures.</li>
+            </ul>
+          </article>
+
+          <article class="terms-item">
+            <h3>8. Organisers’ rights</h3>
+            <ul>
+              <li>The organisers reserve the right to refuse entry or remove any guest who violates these rules or poses a safety risk.</li>
+              <li>Attendance is subject to compliance with event rules and venue regulations.</li>
+            </ul>
+          </article>
+        </div>
+
+        <aside class="terms-ack" role="note">
+          <p>By purchasing a ticket or attending Tee's Beach House Edition, you acknowledge and agree to follow these rules.</p>
+          <p>Come ready to have fun, but please party responsibly.</p>
+          <p class="terms-ack-thanks">Thank you for choosing Tee's Beach House Edition.</p>
+        </aside>
       </div>
     </section>
 
